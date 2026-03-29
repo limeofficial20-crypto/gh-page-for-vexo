@@ -54,13 +54,18 @@ async function api(path, options = {}) {
 
 /** Показать экран по id, запомнить предыдущий для goBack() */
 function showScreen(id, savePrev = true) {
+  const target = document.getElementById(id);
+  if (!target) {
+    console.error(`Экран с id="${id}" не найден в HTML!`);
+    return;
+  }
+
   const current = document.querySelector(".screen.active");
   if (current && savePrev) State.prevScreen = current.id;
 
   document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
+  target.classList.add("active");
 
-  // Прокручиваем вверх
   window.scrollTo(0, 0);
 }
 
@@ -195,43 +200,33 @@ async function loadProfile() {
 function renderProfile(p) {
   const pct = Math.min(p.orders_count / 7, 1) * 100;
 
-  // ── СТИЛЬНЫЕ SVG ИКОНКИ ──
+  // ── ИКОНКИ ──
   const iconCrown = `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="margin-right:4px; margin-bottom:2px;"><path d="M2 22h20v-2H2v2zm9-5.16 5-4.5 3.84 4.8A1 1 0 0 0 21.6 16l1.3-8.45a1 1 0 0 0-1.2-1.12L17 7.6 12.37 2a1 1 0 0 0-1.54 0L6.2 7.6 1.5 6.43a1 1 0 0 0-1.2 1.12L1.6 16a1 1 0 0 0 .76.8l3.84-4.8 5 4.5a1 1 0 0 0 1.35 0z"/></svg>`;
   const iconCopy = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
   const iconShare = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>`;
   const iconEdit = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>`;
   const iconBellOn = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>`;
   const iconBellOff = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.73 21a2 2 0 0 1-3.46 0"></path><path d="M18.63 13A17.89 17.89 0 0 1 18 8"></path><path d="M6.26 6.26A5.86 5.86 0 0 0 6 8c0 7-3 9-3 9h14"></path><path d="M18 8a6 6 0 0 0-9.33-5"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`;
-
-  const defaultAvatar = `<svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
+  const defaultAvatar = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
 
   document.getElementById("profile-content").innerHTML = `
     <div class="vip-card">
       <div class="card-gradient"></div>
       <div class="card-watermark">VEXO // AUTHENTIC</div>
-      
       <div class="card-avatar-wrap">
-        <div class="card-avatar">
-          ${defaultAvatar}
-        </div>
+        <div class="card-avatar">${defaultAvatar}</div>
       </div>
-
       <div class="vip-card-content">
         <div class="card-badge" style="display:inline-flex; align-items:center;">${iconCrown} ${p.status}</div>
         <div class="card-name">${p.name}</div>
-        
         <div class="card-stats">
-          <div class="stat-bubble">
-            <div class="stat-value">${p.orders_count}</div>
-            <div class="stat-label">Заказов</div>
-          </div>
-          <div class="stat-bubble">
-            <div class="stat-value">${p.discount}%</div>
-            <div class="stat-label">Скидка</div>
-          </div>
+          <div class="stat-bubble"><div class="stat-value">${p.orders_count}</div><div class="stat-label">Заказов</div></div>
+          <div class="stat-bubble"><div class="stat-value">${p.discount}%</div><div class="stat-label">Скидка</div></div>
         </div>
       </div>
-    </div> <div class="progress-wrap card">
+    </div>
+
+    <div class="progress-wrap card">
       <div class="progress-label">${p.goal_text}</div>
       <div class="progress-bar-bg">
         <div class="progress-bar-fill" style="width:${pct}%"></div>
@@ -242,12 +237,8 @@ function renderProfile(p) {
       <div class="card-title">Реферальная система</div>
       <div class="ref-box" id="ref-link-box">${p.ref_link}</div>
       <div class="btn-row">
-        <button class="btn btn-primary" onclick="copyText('${p.ref_link}')">
-          ${iconCopy} Копировать
-        </button>
-        <button class="btn btn-secondary" onclick="shareRef()">
-          ${iconShare} Поделиться
-        </button>
+        <button class="btn btn-primary" onclick="copyText('${p.ref_link}')">${iconCopy} Копировать</button>
+        <button class="btn btn-secondary" onclick="shareRef()">${iconShare} Поделиться</button>
       </div>
     </div>
 
@@ -395,10 +386,10 @@ async function openOrder(orderId) {
 
 function renderOrderDetail(o) {
   const steps = [
-    { emoji: "✅", label: "Принят",   key: "✅" },
+    { emoji: "✅", label: "Принят", key: "✅" },
     { emoji: "💰", label: "Выкуплен", key: "💰" },
-    { emoji: "🚚", label: "В пути",   key: "🚚" },
-    { emoji: "📦", label: "Прибыл",   key: "📦" },
+    { emoji: "🚚", label: "В пути", key: "🚚" },
+    { emoji: "📦", label: "Прибыл", key: "📦" },
   ];
 
   const statusOrder = ["✅", "💰", "🚚", "📦"];
@@ -445,7 +436,7 @@ async function loadReviews(page = 1) {
   State.reviewsLoaded = true;
   State.reviewsPage = page;
   const list = document.getElementById("reviews-list");
-  const pag  = document.getElementById("reviews-pagination");
+  const pag = document.getElementById("reviews-pagination");
 
   list.innerHTML = `<div class="loader-wrap"><div class="loader"></div></div>`;
 
@@ -506,14 +497,14 @@ function selectStar(n) {
 }
 
 async function submitReview() {
-  const item   = document.getElementById("rev-item").value.trim();
-  const name   = document.getElementById("rev-name").value.trim();
-  const text   = document.getElementById("rev-text").value.trim();
+  const item = document.getElementById("rev-item").value.trim();
+  const name = document.getElementById("rev-name").value.trim();
+  const text = document.getElementById("rev-text").value.trim();
   const rating = State.reviewRating;
 
-  if (!item)   { toast("⚠️ Укажите название товара"); return; }
-  if (!name)   { toast("⚠️ Укажите имя"); return; }
-  if (!text)   { toast("⚠️ Напишите отзыв"); return; }
+  if (!item) { toast("⚠️ Укажите название товара"); return; }
+  if (!name) { toast("⚠️ Укажите имя"); return; }
+  if (!text) { toast("⚠️ Напишите отзыв"); return; }
   if (!rating) { toast("⚠️ Выберите оценку"); return; }
 
   try {
@@ -580,7 +571,7 @@ function showFaq(key) {
   const item = FAQ_CONTENT[key];
   if (!item) return;
   document.getElementById("faq-title").textContent = item.title;
-  document.getElementById("faq-text").textContent  = item.text;
+  document.getElementById("faq-text").textContent = item.text;
   showScreen("screen-faq");
 }
 
@@ -644,7 +635,7 @@ async function loadCrmClients(page = 1) {
   State.crmClientsLoaded = true;
   State.clientsPage = page;
   const list = document.getElementById("crm-clients-list");
-  const pag  = document.getElementById("crm-clients-pagination");
+  const pag = document.getElementById("crm-clients-pagination");
 
   list.innerHTML = `<div class="loader-wrap"><div class="loader"></div></div>`;
 
@@ -679,19 +670,19 @@ async function loadCrmClients(page = 1) {
 // ============================================================================
 // СТАРТ
 // ============================================================================
-// init();
+ init();
 // ============================================================================
 // ВРЕМЕННЫЙ ТЕСТОВЫЙ ЗАПУСК БЕЗ СЕРВЕРА
 // ============================================================================
 
 // Укажи "client" (клиент) или "staff" (сотрудник), чтобы смотреть разные интерфейсы
-State.role = "client"; 
+State.role = "client";
 
 if (State.role === "staff") {
   document.getElementById("client-tabbar").style.display = "none";
   document.getElementById("staff-tabbar").style.display = "flex";
   showScreen("screen-crm-main");
-  
+
   // Фейковая статистика для CRM
   document.getElementById("crm-stats").innerHTML = `
     <div class="crm-stat-card"><div class="crm-stat-value">124</div><div class="crm-stat-label">👥 Клиентов</div></div>
@@ -703,7 +694,7 @@ if (State.role === "staff") {
   document.getElementById("client-tabbar").style.display = "flex";
   document.getElementById("staff-tabbar").style.display = "none";
   showScreen("screen-profile");
-  
+
   // Фейковые данные профиля клиента
   State.profile = {
     card_emoji: "👑", status: "VIP Client", name: "Тестовый Пользователь",
@@ -713,3 +704,61 @@ if (State.role === "staff") {
   };
   renderProfile(State.profile);
 }
+// 1. Наш каталог товаров
+const PRODUCTS = [
+  { id: 1, category: 'shoes', title: 'Nike Dunk Low', price: 12400, oldPrice: 15500, img: '👟', discount: '-20%' },
+  { id: 2, category: 'clothes', title: 'VEXO Zip Hoodie', price: 6900, img: '👕' },
+  { id: 3, category: 'acc', title: 'Balenciaga Cap', price: 21000, oldPrice: 23500, img: '🧢', discount: '-10%' },
+  { id: 4, category: 'shoes', title: 'Jordan 1 Retro', price: 18900, img: '🏀' },
+  { id: 5, category: 'clothes', title: 'Street Over Tee', price: 3500, oldPrice: 4500, img: '👕', discount: '-22%' },
+  { id: 6, category: 'acc', title: 'VEXO Beanie', price: 2800, img: '🧶' }
+];
+
+let currentFilter = 'all';
+
+// 2. Функция отрисовки товаров
+function renderProducts() {
+  const grid = document.getElementById('products-list');
+  const searchTerm = document.getElementById('product-search').value.toLowerCase();
+  
+  // Фильтруем список
+  const filtered = PRODUCTS.filter(p => {
+    const matchCategory = currentFilter === 'all' || p.category === currentFilter;
+    const matchSearch = p.title.toLowerCase().includes(searchTerm);
+    return matchCategory && matchSearch;
+  });
+
+  if (filtered.length === 0) {
+    grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:40px; color:var(--tg-hint);">Ничего не найдено</div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map(p => `
+    <div class="product-card" onclick="openProduct(${p.id})">
+      <div class="product-img-box">
+        ${p.discount ? `<div class="discount-tag">${p.discount}</div>` : ''}
+        <div style="font-size:48px;">${p.img}</div>
+      </div>
+      <div class="product-title">${p.title}</div>
+      <div class="product-prices">
+        <span class="price-new">${p.price.toLocaleString()} ₽</span>
+        ${p.oldPrice ? `<span class="price-old">${p.oldPrice.toLocaleString()} ₽</span>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+// 3. Логика фильтров
+function setFilter(category, el) {
+  currentFilter = category;
+  // Смена активного класса у кнопок
+  document.querySelectorAll('.filter-chip').forEach(btn => btn.classList.remove('active'));
+  el.classList.add('active');
+  renderProducts();
+}
+
+// 4. Глобальный поиск
+function filterProducts() {
+  renderProducts();
+}
+renderProducts()
