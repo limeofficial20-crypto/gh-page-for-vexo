@@ -7,6 +7,85 @@
   <title>VEXO</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
+
+/* Стили для карточек в сетке */
+.products-grid .product-card {
+    background: var(--tg-secondary-bg);
+    border-radius: 20px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+.products-grid .product-img-box {
+    background: rgba(255,255,255,0.03);
+    border-radius: 14px;
+    height: 160px; /* Фиксированная высота для ровной сетки */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.price-old {
+    font-size: 11px;
+    text-decoration: line-through;
+    color: var(--tg-hint);
+    margin-left: 5px;
+}
+
+.price-new {
+    font-weight: 800;
+    color: var(--tg-text);
+}
+
+    /* ── Сетка товаров ── */
+    .search-wrap { margin-bottom: 12px; }
+    
+    .filters-row {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 16px;
+      scrollbar-width: none;
+    }
+    .filters-row::-webkit-scrollbar { display: none; }
+    
+    .filter-chip {
+      padding: 8px 16px;
+      background: var(--tg-secondary);
+      border: 1px solid #222;
+      border-radius: 99px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--tg-hint);
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .filter-chip.active {
+      background: var(--tg-accent);
+      color: #fff;
+      border-color: var(--tg-accent);
+      box-shadow: 0 4px 12px rgba(218, 28, 70, 0.3);
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr; /* Две колонки */
+      gap: 12px;
+      padding-bottom: 20px;
+    }
+
+    /* Используем те же стили product-card, что были в карусели, 
+       но убираем flex: 0 0 145px; чтобы они тянулись по сетке */
+    .products-grid .product-card {
+      flex: none; 
+      width: 100%;
+    }
+
     /* ── СТИЛЬ PREMIUM STREETWEAR ── */
     :root {
       /* Основные цвета фона */
@@ -75,72 +154,125 @@
       }
     }
 
-    /* ── Премиальная Шапка VEXO ── */
-    .top-nav {
-      position: relative; /* Создаем рамки для шапки */
-      min-height: 50px; /* Задаем высоту шапки */
-      margin-bottom: 24px; /* Отступ до карточки */
-      margin-top: 8px; /* Небольшой отступ от самого верха экрана */
-    }
+/* ── Исправленная Премиальная Шапка ── */
+.top-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 16px;
+    position: sticky; /* Липнет к верху при скролле */
+    top: 0;
+    background: var(--tg-bg); /* Чтобы контент не просвечивал при скролле */
+    z-index: 100;
+    width: 100%;
+    min-height: 60px; /* Фиксированная высота для стабильности */
+}
+
+/* Логотип строго по центру */
+.top-nav-logo {
+    font-family: 'Arial Black', Impact, sans-serif;
+    font-size: 39px;
+    font-weight: 900;
+    letter-spacing: 17px;
+    color: #ffffff;
+    text-transform: uppercase;
+    font-style: italic;
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
     
-    .top-nav-logo {
-      font-family: 'Arial Black', Impact, sans-serif; /* Более массивный и "квадратный" шрифт */
-      font-size: 34px;
-      font-weight: 900;
-      letter-spacing: 6px;
-      color: #ffffff;
-      text-transform: uppercase;
-      font-style: italic;
-      text-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
-      
-      /* Идеальное центрирование */
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-    }
+    /* Магия центрирования */
+    position: absolute;
+    left: 50%;
+    top: 47%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+}
+#profile-content {
+      margin-top: 39px;
+
+}
+/* Красная буква X */
+.logo-x {
+    color: var(--tg-accent);
+    text-shadow: 0 0 20px rgba(218, 28, 70, 0.6);
+}
+
+/* Контейнер для кнопок (корзина и колокольчик) */
+.top-nav-actions {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    gap: 12px;
+}
     
-    /* ── Стиль для красной буквы X ── */
-    .logo-x {
-      color: var(--tg-accent); /* Наш фирменный вишнево-красный */
-      text-shadow: 0 0 20px rgba(218, 28, 70, 0.6); /* Глубокое красное свечение */
-    }
+    /* Остальные стили кнопок .top-nav-btn оставляем как были */
     
     .top-nav-btn {
-      position: absolute;
-      right: 16px; /* Добавили отступ от правого края (было 0) */
-      top: 59%;
-      transform: translateY(-50%);
+      position: relative; /* Чтобы бейджик корзины позиционировался от кнопки */
+      background: #121212; border: 1px solid #333; border-radius: 50%;
+      width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: #fff; transition: all 0.2s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+    .top-nav-btn:active { transform: scale(0.92); background: #1a1a1a; }
+    .top-nav-btn svg { width: 20px; height: 20px; fill: var(--tg-hint); transition: fill 0.2s; }
+    .top-nav-btn:hover svg { fill: #ffffff; }
+
+    /* Красный счетчик на корзине */
+    .cart-badge {
+      position: absolute; top: -4px; right: -4px;
+      background: var(--tg-accent); color: #fff;
+      font-size: 11px; font-weight: 900;
+      width: 18px; height: 18px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 10px rgba(218, 28, 70, 0.5);
+      opacity: 0; transition: opacity 0.3s, transform 0.3s; transform: scale(0.5);
+    }
+    .cart-badge.active { opacity: 1; transform: scale(1); }
+
+/* ── Карусель Товаров (Свайп в стиле iOS) ── */
+    .section-title { font-size: 16px; font-weight: 800; text-transform: uppercase; margin-bottom: 14px; margin-top: 10px; color: #fff; letter-spacing: 0.5px;}
+    .carousel-wrap { margin: 0 -16px 24px -16px; position: relative; z-index: 10; } 
+    .carousel {
+      display: flex; gap: 14px; overflow-x: auto; padding: 0 16px 16px 16px;
+      scroll-snap-type: x mandatory; scrollbar-width: none;
+    }
+    .carousel::-webkit-scrollbar { display: none; }
+
+    .product-card {
+      flex: 0 0 145px;
+      /* ── Эффект Apple: Скругление, Размытие и Прозрачный низ ── */
+      background: linear-gradient(180deg, rgba(30,30,30,0.9) 0%, rgba(10,10,10,0.2) 100%);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
       
-      background: #121212;
-      border: 1px solid #333;
-      border-radius: 50%;
-      width: 46px; /* Сделали кнопку больше (было 40px) */
-      height: 46px; /* Сделали кнопку больше */
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      color: #fff;
-      transition: all 0.2s ease;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      border-radius: 22px; /* Сильное скругление, как у виджетов */
+      padding: 8px;
+      scroll-snap-align: start; display: flex; flex-direction: column;
+      position: relative;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
     }
     
-    .top-nav-btn:active {
-      transform: translateY(-50%) scale(0.92);
-      background: #1a1a1a;
+    .product-img-box {
+      width: 100%; height: 135px; background: rgba(0,0,0,0.4);
+      border-radius: 16px; /* Внутреннее скругление для картинки */
+      margin-bottom: 12px;
+      display: flex; align-items: center; justify-content: center; overflow: hidden;
+      position: relative;
+    }
+    .product-img-box img { width: 100%; height: 100%; object-fit: cover; }
+    
+    .discount-tag {
+      position: absolute; top: 6px; left: 6px;
+      background: var(--tg-accent); color: #fff; font-size: 10px; font-weight: 800;
+      padding: 4px 8px; border-radius: 8px; box-shadow: 0 2px 8px rgba(218, 28, 70, 0.5);
     }
     
-    .top-nav-btn svg {
-      width: 22px; /* Увеличили саму иконку внутри (было 18px) */
-      height: 22px;
-      fill: var(--tg-hint);
-      transition: fill 0.2s;
-    }
-    
-    .top-nav-btn:hover svg {
-      fill: #ffffff;
-    }
+    .product-title { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 4px; }
+    .product-prices { display: flex; align-items: baseline; gap: 6px; padding: 0 4px 6px; }
+    .price-new { font-size: 15px; font-weight: 900; color: #fff; }
+    .price-old { font-size: 11px; color: var(--tg-hint); text-decoration: line-through; }
 
     .top-nav-btn:active {
       transform: scale(0.92);
@@ -660,54 +792,65 @@
       <div class="empty-text" id="ban-reason">Аккаунт заблокирован.</div>
     </div>
   </div>
+  
+ <div class="screen has-tabbar active" id="screen-profile">
+    <div class="top-nav">
+        <div class="top-nav-logo">VE<span class="logo-x">X</span>O</div>
+        
+        <div class="top-nav-actions">
+            <button class="top-nav-btn" onclick="openCart()">
+                <svg viewBox="0 0 24 24">
+                    <path d="M19 6h-2c0-2.76-2.24-5-5-5S7 3.24 7 6H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-7-3c1.66 0 3 1.34 3 3H9c0-1.66 1.34-3 3-3zm7 17H5V8h14v12z"/>
+                </svg>
+                <div class="cart-badge" id="cart-counter">0</div>
+            </button>
 
-  <!-- ══════════════════════════════════════════════════════════════════════════
-     КЛИЕНТ: Главный экран (таб-бар)
-══════════════════════════════════════════════════════════════════════════ -->
+            <button class="top-nav-btn" onclick="toast('Уведомлений нет')">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/>
+                </svg>
+            </button>
+        </div>
+    </div>
 
-  <!-- Таб: Профиль -->
-  <div class="top-nav">
-    <div class="top-nav-logo">VE<span class="logo-x">X</span>O</div>
-    <button class="top-nav-btn" onclick="toast('Уведомлений пока нет')">
-      <svg viewBox="0 0 24 24">
-        <path
-          d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z" />
-      </svg>
-    </button>
-  </div>
-  <div class="screen has-tabbar" id="screen-profile">
     <div id="profile-content">
-      <div class="loader-wrap">
-        <div class="loader"></div>
-      </div>
+        <div class="loader-wrap">
+            <div class="loader"></div>
+        </div>
+    </div>
+</div>
+
+<div class="screen has-tabbar" id="screen-products">
+    <div class="header">
+      <div class="header-title">🛍️ Каталог</div>
+    </div>
+
+    <div class="search-wrap">
+      <input type="text" class="input" placeholder="Поиск по названию..." id="product-search" oninput="filterProducts()">
+    </div>
+    
+    <div class="filters-row">
+      <div class="filter-chip active" onclick="setFilter('all', this)">Все</div>
+      <div class="filter-chip" onclick="setFilter('shoes', this)">Обувь</div>
+      <div class="filter-chip" onclick="setFilter('clothes', this)">Одежда</div>
+      <div class="filter-chip" onclick="setFilter('acc', this)">Аксессуары</div>
+    </div>
+
+    <div class="products-grid" id="products-list">
+      <div class="loader-wrap"><div class="loader"></div></div>
     </div>
   </div>
 
-  <!-- Таб: Заказы -->
-  <div class="screen has-tabbar" id="screen-orders">
-    <div class="header">
-      <div class="header-title">📦 Мои заказы</div>
-    </div>
-    <div id="orders-list">
-      <div class="loader-wrap">
-        <div class="loader"></div>
-      </div>
-    </div>
-  </div>
+<div class="screen has-tabbar" id="screen-orders">
+    <div class="header"><div class="header-title">📦 Мои заказы</div></div>
+    <div id="orders-list"><div class="loader-wrap"><div class="loader"></div></div></div>
+</div>
 
-  <!-- Таб: Отзывы -->
-  <div class="screen has-tabbar" id="screen-reviews">
-    <div class="header">
-      <div class="header-title">⭐️ Отзывы</div>
-    </div>
-    <div id="reviews-list">
-      <div class="loader-wrap">
-        <div class="loader"></div>
-      </div>
-    </div>
+<div class="screen has-tabbar" id="screen-reviews">
+    <div class="header"><div class="header-title">⭐️ Отзывы</div></div>
+    <div id="reviews-list"><div class="loader-wrap"><div class="loader"></div></div></div>
     <div class="pagination" id="reviews-pagination"></div>
-  </div>
-
+</div>
   <!-- Таб: Поддержка -->
   <div class="screen has-tabbar" id="screen-support">
     <div class="header">
@@ -746,10 +889,15 @@
     </div>
   </div>
 
+
   <!-- ── Таб-бар клиента ── -->
   <div class="tab-bar" id="client-tabbar">
     <button class="tab-btn active" data-tab="profile" onclick="switchTab('profile')">
       <span class="tab-btn-icon">👤</span>Профиль
+    </button>
+    <button class="tab-btn" onclick="showScreen('screen-products')" id="tab-products">
+      <div class="tab-btn-icon">🛍️</div>
+      <div>Товары</div>
     </button>
     <button class="tab-btn" data-tab="orders" onclick="switchTab('orders')">
       <span class="tab-btn-icon">📦</span>Заказы
@@ -760,6 +908,7 @@
     <button class="tab-btn" data-tab="support" onclick="switchTab('support')">
       <span class="tab-btn-icon">💬</span>Поддержка
     </button>
+ 
   </div>
 
   <!-- ══════════════════════════════════════════════════════════════════════════
