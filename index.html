@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>VEXO</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    /* ── СТИЛЬ PREMIUM STREETWEAR ── */
+    :root {
+      /* Основные цвета фона */
+      --tg-bg: #000000;
+      --tg-secondary: #121212;
+
+      /* Цвета текста */
+      --tg-text: #ffffff;
+      --tg-hint: #8a8a8a;
+
+      /* Акцентные цвета (Streetwear) */
+      --tg-accent: #da1c46;
+      /* Вишнево-красный */
+      --tg-accent-text: #ffffff;
+      --tg-link: #da1c46;
+      --tg-purple: #3f11a3;
+      /* Глубокий фиолетовый */
+
+      /* Углы и переходы */
+      --radius: 12px;
+      --transition: 0.2s ease;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--tg-bg);
+      
+      /* ── Тот самый стрит-паттерн на фоне ── */
+      background-image: url("data:image/svg+xml,%3Csvg width='420' height='45' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='0' y='30' fill='rgba(255,255,255,0.02)' font-family='sans-serif' font-size='16' font-weight='900' font-style='italic' letter-spacing='3'%3EVEXO // AUTHENTIC // STREETWEAR%3C/text%3E%3C/svg%3E");
+      background-repeat: repeat;
+      
+      color: var(--tg-text);
+      min-height: 100vh;
+      overscroll-behavior: none;
+    }
+
+    /* ── Экраны ── */
+    .screen {
+      display: none;
+      flex-direction: column;
+      min-height: 100vh;
+      padding: 16px 16px 32px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ── Премиальная Шапка VEXO ── */
+    .top-nav {
+      position: relative; /* Создаем рамки для шапки */
+      min-height: 50px; /* Задаем высоту шапки */
+      margin-bottom: 24px; /* Отступ до карточки */
+      margin-top: 8px; /* Небольшой отступ от самого верха экрана */
+    }
+    
+    .top-nav-logo {
+      font-family: 'Arial Black', Impact, sans-serif; /* Более массивный и "квадратный" шрифт */
+      font-size: 34px;
+      font-weight: 900;
+      letter-spacing: 6px;
+      color: #ffffff;
+      text-transform: uppercase;
+      font-style: italic;
+      text-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+      
+      /* Идеальное центрирование */
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+    
+    /* ── Стиль для красной буквы X ── */
+    .logo-x {
+      color: var(--tg-accent); /* Наш фирменный вишнево-красный */
+      text-shadow: 0 0 20px rgba(218, 28, 70, 0.6); /* Глубокое красное свечение */
+    }
+    
+    .top-nav-btn {
+      position: absolute;
+      right: 16px; /* Добавили отступ от правого края (было 0) */
+      top: 59%;
+      transform: translateY(-50%);
+      
+      background: #121212;
+      border: 1px solid #333;
+      border-radius: 50%;
+      width: 46px; /* Сделали кнопку больше (было 40px) */
+      height: 46px; /* Сделали кнопку больше */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #fff;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+    
+    .top-nav-btn:active {
+      transform: translateY(-50%) scale(0.92);
+      background: #1a1a1a;
+    }
+    
+    .top-nav-btn svg {
+      width: 22px; /* Увеличили саму иконку внутри (было 18px) */
+      height: 22px;
+      fill: var(--tg-hint);
+      transition: fill 0.2s;
+    }
+    
+    .top-nav-btn:hover svg {
+      fill: #ffffff;
+    }
+
+    .top-nav-btn:active {
+      transform: scale(0.92);
+      background: #1a1a1a;
+    }
+
+    .top-nav-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: var(--tg-hint);
+      /* Цвет иконки (серый) */
+      transition: fill 0.2s;
+    }
+
+    .top-nav-btn:hover svg {
+      fill: #ffffff;
+      /* При нажатии/наведении белеет */
+    }
+
+    /* ── Шапка ── */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .header-back {
+      background: var(--tg-secondary);
+      border: 1px solid #222;
+      color: var(--tg-text);
+      font-size: 18px;
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .header-title {
+      font-size: 22px;
+      font-weight: 800;
+      /* Более массивный заголовок */
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      flex: 1;
+    }
+
+    /* ── Карточки ── */
+    .card {
+      background: var(--tg-secondary);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 12px;
+      border: 1px solid #222;
+      /* Премиальная тонкая обводка */
+      box-shadow: 0 4px 15px rgba(255, 255, 255, 0.02);
+    }
+
+    .card-title {
+      font-size: 12px;
+      color: var(--tg-hint);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+      font-weight: 700;
+    }
+
+    /* ── VIP-карта профиля (Streetwear Версия) ── */
+    .vip-card {
+      border-radius: var(--radius);
+      padding: 24px 20px;
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+      /* Глубокая тень */
+    }
+
+    /* Градиент карты */
+    .card-gradient {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, #2a1c7d 0%, #6a1d82 45%, #b11a43 100%);
+      z-index: 0;
+    }
+
+    /* Контент поверх градиента */
+    .vip-card-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-badge {
+      display: inline-block;
+      font-size: 13px;
+      font-weight: 800;
+      background: var(--tg-accent);
+      color: #fff;
+      padding: 4px 12px;
+      border-radius: 99px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    .card-name {
+      font-size: 22px;
+      font-weight: 800;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      color: #fff;
+    }
+
+    .card-stats {
+      display: flex;
+      gap: 16px;
+    }
+
+    .stat-bubble {
+      text-align: center;
+      border: 1px solid var(--tg-accent);
+      border-radius: var(--radius);
+      padding: 10px;
+      flex: 1;
+      background: rgba(0, 0, 0, 0.2);
+      /* Затемнение под текстом */
+    }
+
+    .stat-value {
+      font-size: 20px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .stat-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 2px;
+    }
+
+    /* Водяной знак */
+    .card-watermark {
+      position: absolute;
+      top: 15px;
+      right: -25px;
+      font-size: 60px;
+      font-weight: 900;
+      color: rgba(255, 255, 255, 0.03);
+      /* Едва заметный */
+      transform: rotate(-12deg);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Прогресс-бар ── */
+    .progress-wrap {
+      margin-bottom: 16px;
+    }
+
+    .progress-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--tg-text);
+      margin-bottom: 8px;
+    }
+
+    .progress-bar-bg {
+      background: #222;
+      border-radius: 99px;
+      height: 8px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: #2aff03; /* Твой кислотно-зеленый цвет */
+      border-radius: 99px;
+      transition: width 0.6s ease;
+      /* Легкое неоновое свечение под цвет полосы */
+      box-shadow: 0 0 12px rgba(42, 255, 3, 0.5); 
+    }
+
+    /* ── Кнопки (Street style) ── */
+    .btn {
+      width: 100%;
+      padding: 16px;
+      border-radius: var(--radius);
+      border: none;
+      font-size: 14px;
+      font-weight: 800;
+      /* Жирный шрифт */
+      text-transform: uppercase;
+      /* КАПС */
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: opacity var(--transition), transform var(--transition);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn:active {
+      opacity: 0.8;
+      transform: scale(0.98);
+    }
+
+   /* ── Свечение для кнопок ── */
+    .btn-primary {
+      background: var(--tg-accent);
+      color: var(--tg-accent-text);
+      box-shadow: 0 4px 20px rgba(218, 28, 70, 0.4); /* Красный неон */
+    }
+    
+    .btn-secondary {
+      background: var(--tg-purple); 
+      color: var(--tg-accent-text);
+      margin-top: 8px;
+      box-shadow: 0 4px 20px rgba(63, 17, 163, 0.4); /* Фиолетовый неон */
+    }
+
+    /* ── Аватарка в VIP-карте ── */
+    .card-avatar-wrap {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      border: 2px solid var(--tg-accent); /* Красная обводка */
+      padding: 2px;
+      background: rgba(0,0,0,0.3);
+      z-index: 2;
+      box-shadow: 0 0 15px rgba(218, 28, 70, 0.3); /* Легкое свечение вокруг фото */
+    }
+    
+    .card-avatar {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: #1a1a1a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    
+    /* Дефолтная иконка человечка, если нет фото */
+    .card-avatar svg {
+      width: 28px;
+      height: 28px;
+      fill: #ffffff;
+      opacity: 0.3;
+    }
+
+    .btn-danger {
+      background: rgba(255, 80, 80, 0.1);
+      color: #ff5050;
+      border: 1px solid #ff5050;
+      margin-top: 8px;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .btn-row .btn {
+      margin-top: 0;
+      flex: 1;
+    }
+
+    /* ── Список ── */
+    .list-item {
+      background: var(--tg-secondary);
+      border-radius: var(--radius);
+      border: 1px solid #222;
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: opacity var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .list-item:active {
+      opacity: 0.7;
+    }
+
+    .list-item-icon {
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .list-item-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .list-item-title {
+      font-size: 15px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--tg-text);
+    }
+
+    .list-item-sub {
+      font-size: 13px;
+      color: var(--tg-hint);
+      margin-top: 3px;
+    }
+
+    .list-item-arrow {
+      color: var(--tg-hint);
+      font-size: 18px;
+    }
+
+    /* Бейдж статуса */
+    .status-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 99px;
+      background: #222;
+      color: var(--tg-text);
+      border: 1px solid #333;
+    }
+
+    .status-badge.done {
+      background: rgba(218, 28, 70, 0.1);
+      color: var(--tg-accent);
+      border-color: var(--tg-accent);
+    }
+
+    /* ── Инпуты ── */
+    .input-wrap {
+      margin-bottom: 16px;
+    }
+
+    .input-label {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--tg-hint);
+      margin-bottom: 8px;
+    }
+
+    .input {
+      width: 100%;
+      background: var(--tg-secondary);
+      border: 1px solid #333;
+      border-radius: var(--radius);
+      padding: 14px;
+      color: var(--tg-text);
+      font-size: 15px;
+      outline: none;
+      transition: border-color var(--transition);
+    }
+
+    .input:focus {
+      border-color: var(--tg-accent);
+    }
+
+    textarea.input {
+      resize: none;
+      min-height: 100px;
+    }
+
+    /* Реферальный бокс */
+    .ref-box {
+      background: var(--tg-bg);
+      border: 1px solid #333;
+      border-radius: var(--radius);
+      padding: 14px;
+      font-size: 13px;
+      color: var(--tg-hint);
+      word-break: break-all;
+      margin-bottom: 12px;
+    }
+
+    /* ── Таб-бар ── */
+    .tab-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--tg-secondary);
+      display: flex;
+      padding: 10px 0 max(10px, env(safe-area-inset-bottom));
+      z-index: 100;
+      border-top: 1px solid #222;
+    }
+
+    .tab-btn {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      background: none;
+      border: none;
+      color: var(--tg-hint);
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: color var(--transition);
+    }
+
+    .tab-btn.active {
+      color: var(--tg-accent);
+    }
+
+    .tab-btn-icon {
+      font-size: 22px;
+    }
+
+    .has-tabbar {
+      padding-bottom: 90px;
+    }
+
+    /* Лоадер и Empty */
+    .empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--tg-hint);
+    }
+
+    .empty-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+      filter: grayscale(1);
+      opacity: 0.5;
+    }
+
+    .loader-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 200px;
+    }
+
+    .loader {
+      width: 36px;
+      height: 36px;
+      border: 3px solid #333;
+      border-top-color: var(--tg-accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    #toast {
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--tg-accent);
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 99px;
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s, transform 0.25s;
+      z-index: 200;
+      box-shadow: 0 4px 15px rgba(218, 28, 70, 0.4);
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ══════════════════════════════════════════════════════════════════════════
+     ЭКРАН: ЗАГРУЗКА
+══════════════════════════════════════════════════════════════════════════ -->
+  <div class="screen active" id="screen-loading">
+    <div class="loader-wrap" style="min-height:100vh">
+      <div class="loader"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════════
+     ЭКРАН: БАН
+══════════════════════════════════════════════════════════════════════════ -->
+  <div class="screen" id="screen-banned">
+    <div class="empty" style="margin-top:30vh">
+      <div class="empty-icon">🚫</div>
+      <div class="empty-text" id="ban-reason">Аккаунт заблокирован.</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════════
+     КЛИЕНТ: Главный экран (таб-бар)
+══════════════════════════════════════════════════════════════════════════ -->
+
+  <!-- Таб: Профиль -->
+  <div class="top-nav">
+    <div class="top-nav-logo">VE<span class="logo-x">X</span>O</div>
+    <button class="top-nav-btn" onclick="toast('Уведомлений пока нет')">
+      <svg viewBox="0 0 24 24">
+        <path
+          d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z" />
+      </svg>
+    </button>
+  </div>
+  <div class="screen has-tabbar" id="screen-profile">
+    <div id="profile-content">
+      <div class="loader-wrap">
+        <div class="loader"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Таб: Заказы -->
+  <div class="screen has-tabbar" id="screen-orders">
+    <div class="header">
+      <div class="header-title">📦 Мои заказы</div>
+    </div>
+    <div id="orders-list">
+      <div class="loader-wrap">
+        <div class="loader"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Таб: Отзывы -->
+  <div class="screen has-tabbar" id="screen-reviews">
+    <div class="header">
+      <div class="header-title">⭐️ Отзывы</div>
+    </div>
+    <div id="reviews-list">
+      <div class="loader-wrap">
+        <div class="loader"></div>
+      </div>
+    </div>
+    <div class="pagination" id="reviews-pagination"></div>
+  </div>
+
+  <!-- Таб: Поддержка -->
+  <div class="screen has-tabbar" id="screen-support">
+    <div class="header">
+      <div class="header-title">🛍 Поддержка</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Связаться с менеджером</div>
+      <p style="font-size:14px;color:var(--tg-hint);margin-bottom:16px;line-height:1.5">
+        Нажмите кнопку ниже — менеджер подключится в чате Telegram и ответит на все вопросы.
+      </p>
+      <button class="btn btn-primary" id="btn-open-support">🛍 Оформить заказ / Задать вопрос</button>
+    </div>
+    <div class="card">
+      <div class="card-title">FAQ</div>
+      <div class="list-item" onclick="showFaq('delivery')">
+        <div class="list-item-icon">🚚</div>
+        <div class="list-item-body">
+          <div class="list-item-title">Сроки доставки</div>
+        </div>
+        <div class="list-item-arrow">›</div>
+      </div>
+      <div class="list-item" onclick="showFaq('payment')">
+        <div class="list-item-icon">💳</div>
+        <div class="list-item-body">
+          <div class="list-item-title">Способы оплаты</div>
+        </div>
+        <div class="list-item-arrow">›</div>
+      </div>
+      <div class="list-item" onclick="showFaq('return')">
+        <div class="list-item-icon">🔄</div>
+        <div class="list-item-body">
+          <div class="list-item-title">Условия возврата</div>
+        </div>
+        <div class="list-item-arrow">›</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Таб-бар клиента ── -->
+  <div class="tab-bar" id="client-tabbar">
+    <button class="tab-btn active" data-tab="profile" onclick="switchTab('profile')">
+      <span class="tab-btn-icon">👤</span>Профиль
+    </button>
+    <button class="tab-btn" data-tab="orders" onclick="switchTab('orders')">
+      <span class="tab-btn-icon">📦</span>Заказы
+    </button>
+    <button class="tab-btn" data-tab="reviews" onclick="switchTab('reviews')">
+      <span class="tab-btn-icon">⭐️</span>Отзывы
+    </button>
+    <button class="tab-btn" data-tab="support" onclick="switchTab('support')">
+      <span class="tab-btn-icon">💬</span>Поддержка
+    </button>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════════
+     ДЕТАЛИ ЗАКАЗА
+══════════════════════════════════════════════════════════════════════════ -->
+  <div class="screen" id="screen-order-detail">
+    <div class="header">
+      <button class="header-back" onclick="goBack()">‹</button>
+      <div class="header-title" id="order-detail-title">Заказ</div>
+    </div>
+    <div id="order-detail-content"></div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════════
+     НАПИСАТЬ ОТЗЫВ
+══════════════════════════════════════════════════════════════════════════ -->
+  <div class="screen" id="screen-write-review">
+    <div class="header">
+      <button class="header-back" onclick="goBack()">‹</button>
+      <div class="header-title">✍️ Новый отзыв</div>
+    </div>
+    <div class="input-wrap">
+      <div class="input-label">Название товара</div>
+      <input class="input" id="rev-item" placeholder="Например: Nike Air Max 90" />
+    </div>
+    <div class="input-wrap">
+      <div class="input-label">Ваше имя</div>
+      <input class="input" id="rev-name" placeholder="Как вас зовут?" />
+    </div>
+    <div class="input-wrap">
+      <div class="input-label">Отзыв</div>
+      <textarea class="input" id="rev-text" placeholder="Поделитесь впечатлениями..."></textarea>
+    </div>
+    <div class="input-wrap">
+      <div class="input-label">Оценка</div>
+      <div class="star-select" id="star-select">
+        <button class="star-btn" data-v="1" onclick="selectStar(1)">⭐</button>
+        <button class="star-btn" data-v="2" onclick="selectStar(2)">⭐</button>
+        <button class="star-btn" data-v="3" onclick="selectStar(3)">⭐</button>
+        <button class="star-btn" data-v="4" onclick="selectStar(4)">⭐</button>
+        <button class="star-btn" data-v="5" onclick="selectStar(5)">⭐</button>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="submitReview()">Отправить отзыв</button>
+    <button class="btn btn-secondary" onclick="goBack()">Отмена</button>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════════
+     FAQ ДЕТАЛИ
+══════════════════════════════════════════════════════════════════════════ -->
+  <div class="screen" id="screen-faq">
+    <div class="header">
+      <button class="header-back" onclick="goBack()">‹</button>
+      <div class="header-title" id="faq-title">FAQ</div>
+    </div>
+    <div class="card">
+      <p id="faq-text" style="font-size:15px;line-height:1.6;color:var(--tg-text)"></p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════════
+     ИЗМЕНИТЬ ИМЯ
+══════════════════════════════════════════════════════════════════════════ -->
+  <div class="screen" id="screen-edit-name">
+    <div class="header">
+      <button class="header-back" onclick="goBack()">‹</button>
+      <div class="header-title">✏️ Изменить имя</div>
+    </div>
+    <div class="input-wrap">
+      <div class="input-label">Новое имя</div>
+      <input class="input" id="new-name-input" placeholder="Введите имя" />
+    </div>
+    <button class="btn btn-primary" onclick="saveName()">Сохранить</button>
+    <button class="btn btn-secondary" onclick="goBack()">Отмена</button>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════════
+     CRM — СОТРУДНИК
+══════════════════════════════════════════════════════════════════════════ -->
+  <div class="screen has-tabbar" id="screen-crm-main">
+    <div class="header">
+      <div class="header-title">📊 Статистика</div>
+    </div>
+    <div class="crm-stat-grid" id="crm-stats">
+      <div class="loader-wrap" style="grid-column:span 2">
+        <div class="loader"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen has-tabbar" id="screen-crm-orders">
+    <div class="header">
+      <div class="header-title">📋 Активные заказы</div>
+    </div>
+    <div id="crm-orders-list">
+      <div class="loader-wrap">
+        <div class="loader"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen has-tabbar" id="screen-crm-clients">
+    <div class="header">
+      <div class="header-title">👥 Клиенты</div>
+    </div>
+    <div id="crm-clients-list">
+      <div class="loader-wrap">
+        <div class="loader"></div>
+      </div>
+    </div>
+    <div class="pagination" id="crm-clients-pagination"></div>
+  </div>
+
+  <!-- ── Таб-бар сотрудника ── -->
+  <div class="tab-bar" id="staff-tabbar" style="display:none">
+    <button class="tab-btn active" data-tab="crm-main" onclick="switchCrmTab('crm-main')">
+      <span class="tab-btn-icon">📊</span>Дашборд
+    </button>
+    <button class="tab-btn" data-tab="crm-orders" onclick="switchCrmTab('crm-orders')">
+      <span class="tab-btn-icon">📦</span>Заказы
+    </button>
+    <button class="tab-btn" data-tab="crm-clients" onclick="switchCrmTab('crm-clients')">
+      <span class="tab-btn-icon">👥</span>Клиенты
+    </button>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════════
+     TOAST
+══════════════════════════════════════════════════════════════════════════ -->
+  <div id="toast"></div>
+
+  <script src="app.js"></script>
+</body>
+
+</html>
