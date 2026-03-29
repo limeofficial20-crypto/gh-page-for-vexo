@@ -7,7 +7,7 @@
 const tg = window.Telegram.WebApp;
 
 // ── Конфиг ─────────────────────────────────────────────────────────────────
-const API_BASE = "https://app.whitesurf.ru"; // ← тот же домен что и WEB_APP_URL в bot.py
+const API_BASE = "https://limeofficial20-crypto.github.io/gh-page-for-vexo/"; // ← тот же домен что и WEB_APP_URL в bot.py
 
 // ── Глобальное состояние ────────────────────────────────────────────────────
 const State = {
