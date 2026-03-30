@@ -1089,7 +1089,11 @@ function checkout() {
             };
 
             // Отправляем данные боту
-            tg.sendData(JSON.stringify(orderData));
+            let res = tg.sendData(JSON.stringify(orderData));
+
+            console.log("P = ", p);
+            console.log("tgUser = ", tgUser);
+            console.log("res = ", res);
             
             // Закрываем Mini App
             tg.close();
