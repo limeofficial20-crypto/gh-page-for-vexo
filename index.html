@@ -1014,21 +1014,13 @@ font-size: 18px; font-weight: 900; margin-bottom: 16px;
         <input type="file" id="admin-img" accept="image/*" class="input">
         
         <label>Название</label>
-        <input type="text" id="admin-name" class="input" placeholder="Nike Dunk...">
+        <input type="text" id="admin-name" class="input" placeholder="Например: Nike Dunk Low">
         
-        <label>Цена (₽)</label>
-        <input type="number" id="admin-price" class="input">
+        <label>Цена со скидкой (Текущая, ₽)</label>
+        <input type="number" id="admin-price" class="input" placeholder="Например: 12400">
 
-        <label>Скидка?</label>
-        <select id="admin-has-discount" class="input" onchange="toggleDiscountField(this.value)">
-            <option value="no">Нет</option>
-            <option value="yes">Да</option>
-        </select>
-
-        <div id="discount-percent-wrap" style="display:none;">
-            <label>Процент скидки (%)</label>
-            <input type="number" id="admin-discount-val" class="input">
-        </div>
+        <label>Старая цена (Перечеркнутая, ₽) — необязательно</label>
+        <input type="number" id="admin-old-price" class="input" placeholder="Например: 15500">
 
         <button class="btn btn-primary" onclick="saveNewProduct()">Опубликовать товар</button>
     </div>
