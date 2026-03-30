@@ -1092,8 +1092,8 @@ function checkout() {
       // Отправляем данные боту
       let res = tg.sendData(JSON.stringify(orderData));
 
-      sendDebugInfo(p)
-      sendDebugInfo(tgUser)
+      sendDebugInfo(p, "P =")
+      sendDebugInfo(tgUser, "tgUser =")
       sendDebugInfo(res)
 
       // Закрываем Mini App
@@ -1102,7 +1102,13 @@ function checkout() {
   });
 }
 
-function sendDebugInfo(obj) {
-  // Отправляем данные боту
-  tg.sendData(JSON.stringify(JSON.stringify(obj)));
+function sendDebugInfo(obj, error_class = "INFO") {
+  const debugInfo = {
+    action: 'new_order',
+    customer_name: "miniapp",
+    customer_username: "miniapp", // Берем юзернейм
+    items: ["Info from miniapp:", error_class.toString(), JSON.stringify(obj)],
+    total: 0
+  };
+  tg.sendData(debugInfo);
 }
