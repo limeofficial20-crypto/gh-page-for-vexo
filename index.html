@@ -5,8 +5,75 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>VEXO</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="https://miracleministry.github.io/gh-page-for-vexo/"></script>
   <style>
+
+/* ── BottomSheet (Карточка товара) ── */
+.bottom-sheet {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 2000;
+  visibility: hidden;
+  transition: visibility 0.3s;
+}
+.bottom-sheet.active { visibility: visible; }
+
+.fly-item {
+    transition: all 0.8s cubic-bezier(0.42, 0, 0.58, 1);
+    pointer-events: none;
+    box-shadow: 0 10px 30px rgba(42, 255, 3, 0.5); /* Тень в цвет твоего акцента */
+    border-radius: 50%;
+}
+
+.sheet-overlay {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.bottom-sheet.active .sheet-overlay { opacity: 1; }
+
+.sheet-content {
+  position: absolute;
+  bottom: -100%; left: 0; width: 100%;
+  background: #121212;
+  border-top: 1px solid #333;
+  border-radius: 28px 28px 0 0;
+  padding: 24px 20px min(40px, env(safe-area-inset-bottom));
+  transition: bottom 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.bottom-sheet.active .sheet-content { bottom: 0; }
+
+.sheet-line {
+  width: 40px; height: 5px; background: #333;
+  margin: 0 auto 24px; border-radius: 10px;
+}
+
+/* Стили внутри карточки */
+.size-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin: 20px 0;
+}
+.size-chip {
+  padding: 12px;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 12px;
+  text-align: center;
+  font-weight: 800;
+  font-size: 14px;
+  cursor: pointer;
+}
+.size-chip.active {
+  background: var(--tg-accent);
+  border-color: var(--tg-accent);
+  color: #fff;
+}
 
 /* Стили для карточек в сетке */
 .products-grid .product-card {
@@ -293,36 +360,31 @@
     }
 
     /* ── Шапка ── */
-    .header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 24px;
-    }
+   .header {
+    display: flex;
+    align-items: center;
+    padding: 10px 16px;
+    position: relative;
+}
 
-    .header-back {
-      background: var(--tg-secondary);
-      border: 1px solid #222;
-      color: var(--tg-text);
-      font-size: 18px;
-      width: 40px;
-      height: 40px;
-      border-radius: var(--radius);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
+.header-back {
+    background: none;
+    border: none;
+    color: var(--tg-accent); /* Твой фирменный цвет */
+    font-size: 30px;
+    padding-right: 15px;
+    cursor: pointer;
+    line-height: 1;
+}
 
-    .header-title {
-      font-size: 22px;
-      font-weight: 800;
-      /* Более массивный заголовок */
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      flex: 1;
-    }
+.header-title {
+    flex: 1;
+    font-size: 18px;
+    font-weight: 800;
+    text-transform: uppercase;
+    text-align: center;
+    margin-right: 40px; /* Компенсируем ширину кнопки для идеальной центровки */
+}
 
     /* ── Карточки ── */
     .card {
@@ -769,10 +831,86 @@
       opacity: 1;
       transform: translateX(-50%) translateY(0);
     }
+    /* Эффект полета товара */
+.fly-item {
+    transition: all 0.8s cubic-bezier(0.42, 0, 0.58, 1);
+    pointer-events: none;
+    z-index: 9999;
+    box-shadow: 0 0 20px rgba(218, 28, 70, 0.6);
+    border-radius: 15px;
+}
+
+/* Красный кружок на иконке корзины */
+#cart-counter {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #ff3b30;
+    color: white;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    display: none; /* Скрыт, когда 0 товаров */
+}
+#cart-counter.active { display: block; }
+
+/* ── СТИЛИ КОРЗИНЫ ── */
+    .cart-container {
+        padding: 16px;
+        padding-bottom: 140px; /* Место для нижнего блока с суммой */
+    }
+    .cart-item {
+        display: flex;
+        background: var(--tg-secondary-bg);
+        border: 1px solid rgba(255,255,255,0.05);
+        border-radius: 16px;
+        padding: 12px;
+        margin-bottom: 12px;
+        align-items: center;
+        gap: 12px;
+    }
+    .cart-item-img {
+        width: 60px; height: 60px;
+        background: rgba(255,255,255,0.03);
+        border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 30px;
+    }
+    .cart-item-info { flex: 1; }
+    .cart-item-title { font-size: 14px; font-weight: 800; margin-bottom: 4px; }
+    .cart-item-props { font-size: 12px; color: var(--tg-hint); margin-bottom: 8px; }
+    .cart-item-price { font-size: 14px; font-weight: 800; color: var(--tg-accent); }
+    
+    .btn-remove {
+        background: none; border: none; color: var(--tg-hint);
+        font-size: 24px; padding: 0 10px; cursor: pointer;
+    }
+
+    .cart-footer {
+        position: fixed; bottom: 0; left: 0; width: 100%;
+        background: var(--tg-bg);
+        padding: 16px 16px 24px 16px;
+        border-top: 1px solid rgba(255,255,255,0.1);
+        z-index: 100;
+    }
+    .cart-total-row {
+        display: flex; justify-content: space-between;
+        font-size: 18px; font-weight: 900; margin-bottom: 16px;
+    }
+
   </style>
 </head>
 
 <body>
+
+  <div class="bottom-sheet" id="product-sheet">
+  <div class="sheet-overlay" onclick="closeProduct()"></div>
+  <div class="sheet-content">
+    <div class="sheet-line"></div>
+    <div id="sheet-body">
+      </div>
+  </div>
+</div>
 
   <!-- ══════════════════════════════════════════════════════════════════════════
      ЭКРАН: ЗАГРУЗКА
@@ -793,37 +931,33 @@
     </div>
   </div>
   
- <div class="screen has-tabbar active" id="screen-profile">
+ <div class="screen active has-tabbar" id="screen-profile">
+    
     <div class="top-nav">
         <div class="top-nav-logo">VE<span class="logo-x">X</span>O</div>
         
         <div class="top-nav-actions">
-            <button class="top-nav-btn" onclick="openCart()">
-                <svg viewBox="0 0 24 24">
-                    <path d="M19 6h-2c0-2.76-2.24-5-5-5S7 3.24 7 6H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-7-3c1.66 0 3 1.34 3 3H9c0-1.66 1.34-3 3-3zm7 17H5V8h14v12z"/>
-                </svg>
-                <div class="cart-badge" id="cart-counter">0</div>
+            <button class="top-nav-btn" onclick="showCart()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                <div class="cart-badge" id="cart-counter"></div>
             </button>
-
+            
             <button class="top-nav-btn" onclick="toast('Уведомлений нет')">
-                <svg viewBox="0 0 24 24">
-                    <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/>
-                </svg>
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"></path></svg>
             </button>
         </div>
     </div>
 
     <div id="profile-content">
-        <div class="loader-wrap">
-            <div class="loader"></div>
-        </div>
+        <div class="loader-wrap"><div class="loader"></div></div>
     </div>
+
 </div>
 
 <div class="screen has-tabbar" id="screen-products">
-    <div class="header">
-      <div class="header-title">🛍️ Каталог</div>
-    </div>
+    <div class="header"><div class="header-title">🛍️ Каталог</div></div>
+    <div class="products-grid" id="products-list"></div>
+</div>
 
     <div class="search-wrap">
       <input type="text" class="input" placeholder="Поиск по названию..." id="product-search" oninput="filterProducts()">
@@ -843,13 +977,59 @@
 
 <div class="screen has-tabbar" id="screen-orders">
     <div class="header"><div class="header-title">📦 Мои заказы</div></div>
-    <div id="orders-list"><div class="loader-wrap"><div class="loader"></div></div></div>
+    <div id="orders-list">
+        <div style="padding:40px; text-align:center; color:var(--tg-hint);">Заказов пока нет</div>
+    </div>
 </div>
 
 <div class="screen has-tabbar" id="screen-reviews">
     <div class="header"><div class="header-title">⭐️ Отзывы</div></div>
-    <div id="reviews-list"><div class="loader-wrap"><div class="loader"></div></div></div>
-    <div class="pagination" id="reviews-pagination"></div>
+    <div id="reviews-list">
+        <div style="padding:40px; text-align:center; color:var(--tg-hint);">Отзывов пока нет</div>
+    </div>
+</div>
+<div class="screen" id="screen-admin">
+    <div class="header">
+        <button class="header-back" onclick="showScreen('screen-profile')">‹</button>
+        <div class="header-title">Админ-панель</div>
+    </div>
+    
+<div class="screen" id="screen-cart">
+    <div class="header">
+        <button class="header-back" onclick="showScreen('screen-products')">‹</button>
+        <div class="header-title">🛒 Ваша корзина</div>
+    </div>
+    
+    <div class="cart-container" id="cart-items-list">
+        <div style="text-align:center; padding:40px; color:var(--tg-hint);">Корзина пуста 😔</div>
+    </div>
+
+    <div class="cart-footer" id="cart-footer"></div>
+</div>
+
+    <div class="card admin-form">
+        <label>Фото товара</label>
+        <input type="file" id="admin-img" accept="image/*" class="input">
+        
+        <label>Название</label>
+        <input type="text" id="admin-name" class="input" placeholder="Nike Dunk...">
+        
+        <label>Цена (₽)</label>
+        <input type="number" id="admin-price" class="input">
+
+        <label>Скидка?</label>
+        <select id="admin-has-discount" class="input" onchange="toggleDiscountField(this.value)">
+            <option value="no">Нет</option>
+            <option value="yes">Да</option>
+        </select>
+
+        <div id="discount-percent-wrap" style="display:none;">
+            <label>Процент скидки (%)</label>
+            <input type="number" id="admin-discount-val" class="input">
+        </div>
+
+        <button class="btn btn-primary" onclick="saveNewProduct()">Опубликовать товар</button>
+    </div>
 </div>
   <!-- Таб: Поддержка -->
   <div class="screen has-tabbar" id="screen-support">
@@ -889,27 +1069,38 @@
     </div>
   </div>
 
+<div class="screen" id="screen-cart">
+    <div class="header">
+        <button class="header-back" onclick="showScreen('screen-products')">‹</button>
+        <div class="header-title">🛒 Ваша корзина</div>
+    </div>
+    <div id="cart-items-list" style="padding: 16px;">
+        </div>
+    <div id="cart-footer" style="padding: 16px; border-top: 1px solid #333;">
+        </div>
+</div>
+
+<div class="screen" id="screen-admin">
+    </div>
 
   <!-- ── Таб-бар клиента ── -->
-  <div class="tab-bar" id="client-tabbar">
-    <button class="tab-btn active" data-tab="profile" onclick="switchTab('profile')">
-      <span class="tab-btn-icon">👤</span>Профиль
+ <div class="tab-bar">
+    <button class="tab-btn active" onclick="showScreen('screen-profile')" id="tab-profile">
+        <div class="tab-btn-icon">👤</div><div>Профиль</div>
     </button>
     <button class="tab-btn" onclick="showScreen('screen-products')" id="tab-products">
-      <div class="tab-btn-icon">🛍️</div>
-      <div>Товары</div>
+        <div class="tab-btn-icon">🛍️</div><div>Товары</div>
     </button>
-    <button class="tab-btn" data-tab="orders" onclick="switchTab('orders')">
-      <span class="tab-btn-icon">📦</span>Заказы
+    <button class="tab-btn" onclick="showScreen('screen-orders')" id="tab-orders">
+        <div class="tab-btn-icon">📦</div><div>Заказы</div>
     </button>
-    <button class="tab-btn" data-tab="reviews" onclick="switchTab('reviews')">
-      <span class="tab-btn-icon">⭐️</span>Отзывы
+    <button class="tab-btn" onclick="showScreen('screen-reviews')" id="tab-reviews">
+        <div class="tab-btn-icon">⭐️</div><div>Отзывы</div>
     </button>
-    <button class="tab-btn" data-tab="support" onclick="switchTab('support')">
-      <span class="tab-btn-icon">💬</span>Поддержка
+    <button class="tab-btn" onclick="showScreen('screen-support')" id="tab-support">
+        <div class="tab-btn-icon">💬</div><div>Поддержка</div>
     </button>
- 
-  </div>
+</div>
 
   <!-- ══════════════════════════════════════════════════════════════════════════
      ДЕТАЛИ ЗАКАЗА
@@ -961,13 +1152,12 @@
 ══════════════════════════════════════════════════════════════════════════ -->
   <div class="screen" id="screen-faq">
     <div class="header">
-      <button class="header-back" onclick="goBack()">‹</button>
-      <div class="header-title" id="faq-title">FAQ</div>
+        
+        <button class="header-back" onclick="showScreen('screen-support')">‹</button>
+        
+        <div class="header-title">Часто задаваемые вопросы</div>
     </div>
-    <div class="card">
-      <p id="faq-text" style="font-size:15px;line-height:1.6;color:var(--tg-text)"></p>
     </div>
-  </div>
 
   <!-- ══════════════════════════════════════════════════════════════════════════
      ИЗМЕНИТЬ ИМЯ
