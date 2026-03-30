@@ -843,19 +843,18 @@ box-shadow: 0 0 20px rgba(218, 28, 70, 0.6);
 border-radius: 15px;
 }
 
-/* Красный кружок на иконке корзины */
-#cart-counter {
-position: absolute;
-top: -5px;
-right: -5px;
-background: #ff3b30;
-color: white;
-font-size: 10px;
-padding: 2px 6px;
-border-radius: 10px;
-display: none; /* Скрыт, когда 0 товаров */
+/* Красный счетчик на корзине */
+.cart-badge {
+position: absolute; top: -6px; right: -6px;
+background: var(--tg-accent); color: #fff;
+font-size: 11px; font-weight: 900;
+min-width: 18px; height: 18px; padding: 0 5px;
+border-radius: 10px; box-sizing: border-box;
+display: flex; align-items: center; justify-content: center;
+box-shadow: 0 0 10px rgba(218, 28, 70, 0.5);
+opacity: 0; transition: opacity 0.3s, transform 0.3s; transform: scale(0.5);
 }
-#cart-counter.active { display: block; }
+.cart-badge.active { opacity: 1; transform: scale(1); }
 
 /* ── СТИЛИ КОРЗИНЫ ── */
 .cart-container {
