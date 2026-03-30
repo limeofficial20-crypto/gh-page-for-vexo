@@ -1104,11 +1104,8 @@ function checkout() {
 
 function sendDebugInfo(obj, error_class = "INFO") {
   const debugInfo = {
-    action: 'new_order',
-    customer_name: "miniapp",
-    customer_username: "miniapp", // Берем юзернейм
-    items: ["Info from miniapp:", error_class.toString(), JSON.stringify(obj)],
-    total: 0
+    action: 'debug',
+    message: `[${error_class}] : ${JSON.stringify(obj)};\n`,
   };
-  tg.sendData(debugInfo);
+  tg.sendData(JSON.stringify(debugInfo));
 }
