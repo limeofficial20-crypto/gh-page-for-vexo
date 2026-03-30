@@ -1066,14 +1066,33 @@ function removeFromCart(index) {
 // Финальная кнопка "Оформить заказ" из корзины
 function checkout() {
     if (cart.length === 0) return;
-    
-    const orderData = {
-        action: 'new_order',
-        customer: p.name, 
-        items: cart,      
-        total: cart.reduce((sum, item) => sum + (item.price * item.count), 0)
-    };
 
-    // Отправляем в Telegram и закрываем Mini App
-    tg.sendData(JSON.stringify(orderData));
+    // Вызываем красивое нативное окно Telegram
+    tg.showPopup({
+        title: 'Оформление заказа',
+        message: 'Для оформления заказа нам понадобится связаться с вами. Вы согласны передать свой @username нашему менеджеру?',
+        buttons: [
+            { id: 'yes', type: 'default', text: 'Да, согласен' },
+            { id: 'no', type: 'destructive', text: 'Отмена' }
+        ]
+    }, function(buttonId) {
+        // Если клиент нажал "Да, согласен"
+        if (buttonId === 'yes') {
+            
+            // Формируем пакет данных
+            const orderData = {
+                action: 'new_order',
+                customer_name: p.name,
+                customer_username: tgUser?.username ? `@${tgUser.username}` : 'Скрыт', // Берем юзернейм
+                items: cart,      
+                total: cart.reduce((sum, item) => sum + (item.price * item.count), 0)
+            };
+
+            // Отправляем данные боту
+            tg.sendData(JSON.stringify(orderData));
+            
+            // Закрываем Mini App
+            tg.close();
+        }
+    });
 }
