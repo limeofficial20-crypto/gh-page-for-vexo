@@ -161,12 +161,19 @@ function showScreen(id) {
   }
   target.classList.add('active');
 
-  // 3. Если это каталог товаров, запускаем его рендер
+  // 3. ПОДСВЕТКА НИЖНЕГО МЕНЮ (НОВЫЙ КОД)
+  // Убираем красный цвет у всех кнопок
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+  // Ищем кнопку, которая соответствует экрану (например, screen-products -> tab-products)
+  const activeTabBtn = document.getElementById(id.replace('screen-', 'tab-'));
+  if (activeTabBtn) activeTabBtn.classList.add('active');
+
+  // 4. Если это каталог товаров, запускаем его рендер
   if (id === 'screen-products') {
     renderProducts();
   }
   
-  // 4. Скроллим в начало страницы
+  // 5. Скроллим в начало страницы
   window.scrollTo(0, 0);
 }
 
@@ -320,7 +327,7 @@ function renderProfile(p) {
       <div class="vip-card-content">
         <div class="card-badge" style="display:inline-flex; align-items:center;">${iconCrown} ${p.status}</div>
 
-<div class="card-name" style="cursor: pointer;" onclick="showScreen('screen-admin')">${p.name}</div>
+<div class="card-name">${p.name}</div>
         <div class="card-stats">
           <div class="stat-bubble"><div class="stat-value">${p.orders_count}</div><div class="stat-label">Заказов</div></div>
           <div class="stat-bubble"><div class="stat-value">${p.discount}%</div><div class="stat-label">Скидка</div></div>
@@ -372,45 +379,52 @@ function toggleDiscountField(val) {
 function saveNewProduct() {
     const name = document.getElementById('admin-name').value;
     const price = parseInt(document.getElementById('admin-price').value);
-    const hasDiscount = document.getElementById('admin-has-discount').value === 'yes';
-    const discVal = parseInt(document.getElementById('admin-discount-val').value) || 0;
+    const oldPrice = parseInt(document.getElementById('admin-old-price').value) || null; // Если пусто, будет null
     const fileInput = document.getElementById('admin-img');
 
     if (!name || !price) {
-        toast("Заполните название и цену!");
+        toast("Заполните название и текущую цену!");
         return;
     }
 
-    // Логика чтения изображения
-    let productImg = '📦'; // Дефолт, если фото не выбрано
-    
+    // Автоматически считаем скидку для красной бирки, если указана старая цена
+    let discountTag = null;
+    if (oldPrice && oldPrice > price) {
+        const percent = Math.round((1 - price / oldPrice) * 100);
+        discountTag = `-${percent}%`;
+    }
+
+    // Вспомогательная функция для добавления
+    const addProductToList = (imgHtml) => {
+        const newProd = {
+            id: Date.now(),
+            title: name,
+            price: price,
+            oldPrice: oldPrice,
+            discount: discountTag,
+            category: 'all',
+            img: imgHtml
+        };
+        PRODUCTS.unshift(newProd); // Добавляем в начало списка
+        toast("Товар опубликован!");
+        
+        // Очищаем форму
+        document.getElementById('admin-name').value = '';
+        document.getElementById('admin-price').value = '';
+        document.getElementById('admin-old-price').value = '';
+        
+        showScreen('screen-products'); // Перекидываем в каталог
+    };
+
+    // Читаем фото или ставим смайлик
     if (fileInput.files && fileInput.files[0]) {
         const reader = new FileReader();
         reader.onload = function(e) {
-            const finalImgUrl = e.target.result; // Это "слепок" картинки в виде текста (base64)
-            
-            const newProd = {
-                id: Date.now(),
-                title: name,
-                price: hasDiscount ? Math.round(price * (1 - discVal/100)) : price,
-                oldPrice: hasDiscount ? price : null,
-                discount: hasDiscount ? `-${discVal}%` : null,
-                category: 'all',
-                img: `<img src="${finalImgUrl}" style="width:100%; height:100%; object-fit:cover;">`
-            };
-
-            PRODUCTS.unshift(newProd); // Добавляем в начало списка
-            toast("Товар опубликован!");
-            showScreen('screen-products');
+            addProductToList(`<img src="${e.target.result}" style="width:100%; height:100%; object-fit:cover;">`);
         };
         reader.readAsDataURL(fileInput.files[0]);
     } else {
-        // Если фото не выбрано, просто добавляем со смайликом
-        PRODUCTS.unshift({
-            id: Date.now(), title: name, price, oldPrice: null, discount: null, category: 'all', img: '📦'
-        });
-        toast("Добавлено без фото");
-        showScreen('screen-products');
+        addProductToList('📦');
     }
 }
 function shareRef() {
