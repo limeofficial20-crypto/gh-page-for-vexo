@@ -67,7 +67,7 @@ if (tg) {
 }
 
 // Берем данные реального пользователя ТГ (если они есть)
-const tgUser = tg?.initDataUnsafe.user;
+const tgUser = tg.initDataUnsafe.user;
 
 // Функция для установки реальной аватарки
 function setupAvatar() {
@@ -865,7 +865,13 @@ if (State.role === "staff") {
     orders_count: 5, discount: 10, goal_text: "Остался 1 заказ до скидки 12%",
     ref_link: "https://t.me/bot?start=test1234", wants_mailing: true
   };
-  renderProfile(State.profile);
+  State.real_profile = {
+    card_emoji: "👑", status: "VIP Client", name: p.username,
+    promo_code: "LOCAL2026", phone_display: "Phone num",
+    orders_count: 5, discount: 10, goal_text: "Остался 1 заказ до скидки 12%",
+    ref_link: "https://t.me/bot?start=test1234", wants_mailing: true
+  };
+  renderProfile(State.real_profile);
 }
 // 1. Наш каталог товаров
 const PRODUCTS = [
@@ -1093,7 +1099,7 @@ function checkout() {
       // Отправляем данные боту
       let res = tg.sendData(JSON.stringify(orderData));
 
-      sendDebugInfo({ "p": p, "tgUser": tgUser, "res": res }, "P, tgUser, res =")
+      // sendDebugInfo({ "p": p, "tgUser": tgUser, "res": res }, "P, tgUser, res =")
 
       // Закрываем Mini App
       tg.close();
@@ -1103,13 +1109,14 @@ function checkout() {
 
 // Функция для дебага прямо внутри Mini App (не закрывает приложение)
 function showDebugInfo(obj, error_class = "INFO") {
-  const sliced = JSON.stringify(obj).slice(0, 200)
+  const sliced = JSON.stringify(obj).slice(30, 230)
   const text = `[${error_class}] : ${sliced}`;
   tg.showAlert(text);
 }
 
 try {
-  showDebugInfo(tg.initDataUnsafe, "tg.initDataUnsafe =");
+  // showDebugInfo(p, "tg.p =");
+  showDebugInfo(tg.initDataUnsafe.user, "tg.initDataUnsafe.user =");
 } catch (error) {
   tg.showAlert(`Критическая ошибка: ${error.message}`);
 }
