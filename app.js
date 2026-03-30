@@ -1102,18 +1102,29 @@ function checkout() {
   });
 }
 
-function sendDebugInfo(obj, error_class = "INFO") {
-  const debugInfo = {
-    action: 'debug',
-    message: `[${error_class}] : ${JSON.stringify(obj)};\n`,
-  };
-  tg.sendData(JSON.stringify(debugInfo));
+// Функция для дебага прямо внутри Mini App (не закрывает приложение)
+function showDebugInfo(obj, error_class = "INFO") {
+  const text = `[${error_class}] : ${JSON.stringify(obj)}`;
+  tg.showAlert(text);
 }
 
 try {
-  sendDebugInfo({ message: "TEST" })
-  sendDebugInfo(p, "P =")
-  sendDebugInfo(tgUser, "tgUser =")
+  // Выводим данные по очереди (каждое следующее окно появится после закрытия предыдущего)
+  showDebugInfo({ message: "TEST" }, "TEST");
+
+  // Проверяем, существует ли tgUser перед выводом
+  if (typeof tgUser !== 'undefined') {
+    showDebugInfo(tgUser, "tgUser");
+  } else {
+    showDebugInfo("tgUser не определен", "ERROR");
+  }
+
+  // Если переменная p (профиль) определяется где-то ниже, этот вызов может выдать ошибку,
+  // поэтому лучше дебажить её после того, как она создана.
+  // showDebugInfo(p, "P ="); 
+
 } catch (error) {
-  document.body.innerHTML = error
+  tg.showAlert(`Критическая ошибка: ${error.message}`);
 }
+
+tg.showAlert("Версия 0.0.1");
