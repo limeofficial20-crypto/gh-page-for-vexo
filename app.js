@@ -8,62 +8,62 @@ let cart = []; // Массив товаров в корзине
 
 // Функция анимации полета в корзину
 function animateFlyToCart(targetEl) {
-    const cartIcon = document.querySelector('.top-nav-btn'); // Иконка корзины в шапке
-    const flyingIcon = targetEl.cloneNode(true);
-    const rect = targetEl.getBoundingClientRect();
-    const cartRect = cartIcon.getBoundingClientRect();
+  const cartIcon = document.querySelector('.top-nav-btn'); // Иконка корзины в шапке
+  const flyingIcon = targetEl.cloneNode(true);
+  const rect = targetEl.getBoundingClientRect();
+  const cartRect = cartIcon.getBoundingClientRect();
 
-    flyingIcon.classList.add('fly-item');
-    flyingIcon.style.position = 'fixed';
-    flyingIcon.style.left = rect.left + 'px';
-    flyingIcon.style.top = rect.top + 'px';
-    flyingIcon.style.width = rect.width + 'px';
-    flyingIcon.style.zIndex = '3000';
-    
-    document.body.appendChild(flyingIcon);
+  flyingIcon.classList.add('fly-item');
+  flyingIcon.style.position = 'fixed';
+  flyingIcon.style.left = rect.left + 'px';
+  flyingIcon.style.top = rect.top + 'px';
+  flyingIcon.style.width = rect.width + 'px';
+  flyingIcon.style.zIndex = '3000';
 
-    setTimeout(() => {
-        flyingIcon.style.left = cartRect.left + 'px';
-        flyingIcon.style.top = cartRect.top + 'px';
-        flyingIcon.style.width = '20px';
-        flyingIcon.style.opacity = '0';
-        flyingIcon.style.transform = 'rotate(360deg)';
-    }, 50);
+  document.body.appendChild(flyingIcon);
 
-    setTimeout(() => flyingIcon.remove(), 800);
+  setTimeout(() => {
+    flyingIcon.style.left = cartRect.left + 'px';
+    flyingIcon.style.top = cartRect.top + 'px';
+    flyingIcon.style.width = '20px';
+    flyingIcon.style.opacity = '0';
+    flyingIcon.style.transform = 'rotate(360deg)';
+  }, 50);
+
+  setTimeout(() => flyingIcon.remove(), 800);
 }
 function addToCart(id) {
-    const product = PRODUCTS.find(p => p.id === id);
-    const count = parseInt(document.getElementById('product-count').innerText);
-    const size = document.querySelector('.size-chip.active').innerText;
-    const delivery = document.querySelector('.delivery-chip.active').getAttribute('data-val');
-    
-    // Анимация полета
-    animateFlyToCart(document.getElementById('main-product-img'));
+  const product = PRODUCTS.find(p => p.id === id);
+  const count = parseInt(document.getElementById('product-count').innerText);
+  const size = document.querySelector('.size-chip.active').innerText;
+  const delivery = document.querySelector('.delivery-chip.active').getAttribute('data-val');
 
-    cart.push({ ...product, count, size, delivery });
-    updateCartUI();
-    closeProduct();
+  // Анимация полета
+  animateFlyToCart(document.getElementById('main-product-img'));
+
+  cart.push({ ...product, count, size, delivery });
+  updateCartUI();
+  closeProduct();
 }
 
 function updateCartUI() {
-    const badge = document.getElementById('cart-counter');
-    const totalItems = cart.reduce((sum, item) => sum + item.count, 0);
-    
-    if (totalItems > 0) {
-        badge.innerText = totalItems;
-        badge.classList.add('active');
-    } else {
-        badge.classList.remove('active');
-    }
+  const badge = document.getElementById('cart-counter');
+  const totalItems = cart.reduce((sum, item) => sum + item.count, 0);
+
+  if (totalItems > 0) {
+    badge.innerText = totalItems;
+    badge.classList.add('active');
+  } else {
+    badge.classList.remove('active');
+  }
 }
 
 // ── 1. ИНИЦИАЛИЗАЦИЯ TELEGRAM WEBAPP ──
 const tg = window.Telegram?.WebApp;
 
 if (tg) {
-    tg.expand(); // Раскрываем на весь экран
-    tg.ready();  // Сообщаем ТГ, что мы готовы
+  tg.expand(); // Раскрываем на весь экран
+  tg.ready();  // Сообщаем ТГ, что мы готовы
 }
 
 // Берем данные реального пользователя ТГ (если они есть)
@@ -172,7 +172,7 @@ function showScreen(id) {
   if (id === 'screen-products') {
     renderProducts();
   }
-  
+
   // 5. Скроллим в начало страницы
   window.scrollTo(0, 0);
 }
@@ -370,62 +370,62 @@ function renderProfile(p) {
 }
 function toggleDiscountField(val) {
 
-    document.getElementById('discount-percent-wrap').style.display = (val === 'yes') ? 'block' : 'none';
+  document.getElementById('discount-percent-wrap').style.display = (val === 'yes') ? 'block' : 'none';
 
 }
 
 
 
 function saveNewProduct() {
-    const name = document.getElementById('admin-name').value;
-    const price = parseInt(document.getElementById('admin-price').value);
-    const oldPrice = parseInt(document.getElementById('admin-old-price').value) || null; // Если пусто, будет null
-    const fileInput = document.getElementById('admin-img');
+  const name = document.getElementById('admin-name').value;
+  const price = parseInt(document.getElementById('admin-price').value);
+  const oldPrice = parseInt(document.getElementById('admin-old-price').value) || null; // Если пусто, будет null
+  const fileInput = document.getElementById('admin-img');
 
-    if (!name || !price) {
-        toast("Заполните название и текущую цену!");
-        return;
-    }
+  if (!name || !price) {
+    toast("Заполните название и текущую цену!");
+    return;
+  }
 
-    // Автоматически считаем скидку для красной бирки, если указана старая цена
-    let discountTag = null;
-    if (oldPrice && oldPrice > price) {
-        const percent = Math.round((1 - price / oldPrice) * 100);
-        discountTag = `-${percent}%`;
-    }
+  // Автоматически считаем скидку для красной бирки, если указана старая цена
+  let discountTag = null;
+  if (oldPrice && oldPrice > price) {
+    const percent = Math.round((1 - price / oldPrice) * 100);
+    discountTag = `-${percent}%`;
+  }
 
-    // Вспомогательная функция для добавления
-    const addProductToList = (imgHtml) => {
-        const newProd = {
-            id: Date.now(),
-            title: name,
-            price: price,
-            oldPrice: oldPrice,
-            discount: discountTag,
-            category: 'all',
-            img: imgHtml
-        };
-        PRODUCTS.unshift(newProd); // Добавляем в начало списка
-        toast("Товар опубликован!");
-        
-        // Очищаем форму
-        document.getElementById('admin-name').value = '';
-        document.getElementById('admin-price').value = '';
-        document.getElementById('admin-old-price').value = '';
-        
-        showScreen('screen-products'); // Перекидываем в каталог
+  // Вспомогательная функция для добавления
+  const addProductToList = (imgHtml) => {
+    const newProd = {
+      id: Date.now(),
+      title: name,
+      price: price,
+      oldPrice: oldPrice,
+      discount: discountTag,
+      category: 'all',
+      img: imgHtml
     };
+    PRODUCTS.unshift(newProd); // Добавляем в начало списка
+    toast("Товар опубликован!");
 
-    // Читаем фото или ставим смайлик
-    if (fileInput.files && fileInput.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            addProductToList(`<img src="${e.target.result}" style="width:100%; height:100%; object-fit:cover;">`);
-        };
-        reader.readAsDataURL(fileInput.files[0]);
-    } else {
-        addProductToList('📦');
-    }
+    // Очищаем форму
+    document.getElementById('admin-name').value = '';
+    document.getElementById('admin-price').value = '';
+    document.getElementById('admin-old-price').value = '';
+
+    showScreen('screen-products'); // Перекидываем в каталог
+  };
+
+  // Читаем фото или ставим смайлик
+  if (fileInput.files && fileInput.files[0]) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      addProductToList(`<img src="${e.target.result}" style="width:100%; height:100%; object-fit:cover;">`);
+    };
+    reader.readAsDataURL(fileInput.files[0]);
+  } else {
+    addProductToList('📦');
+  }
 }
 function shareRef() {
   if (!State.profile) return;
@@ -882,7 +882,7 @@ let currentFilter = 'all';
 function renderProducts() {
   const grid = document.getElementById('products-list');
   const searchTerm = document.getElementById('product-search').value.toLowerCase();
-  
+
   // Фильтруем список
   const filtered = PRODUCTS.filter(p => {
     const matchCategory = currentFilter === 'all' || p.category === currentFilter;
@@ -992,7 +992,7 @@ function selectDelivery(el) {
 function handleOrder(productId) {
   const product = PRODUCTS.find(p => p.id === productId);
   const size = document.querySelector('.size-chip.active').innerText;
-  
+
   const orderData = {
     type: 'order',
     product: product.title,
@@ -1009,29 +1009,29 @@ function handleOrder(productId) {
 
 // Открывает экран корзины и рисует товары
 function showCart() {
-    showScreen('screen-cart');
-    renderCartItems();
+  showScreen('screen-cart');
+  renderCartItems();
 }
 
 // Рисует список товаров и считает сумму
 function renderCartItems() {
-    const list = document.getElementById('cart-items-list');
-    const footer = document.getElementById('cart-footer');
+  const list = document.getElementById('cart-items-list');
+  const footer = document.getElementById('cart-footer');
 
-    // Если корзина пустая
-    if (cart.length === 0) {
-        list.innerHTML = `<div style="text-align:center; padding:40px; color:var(--tg-hint);">Корзина пуста 😔</div>`;
-        footer.innerHTML = '';
-        return;
-    }
+  // Если корзина пустая
+  if (cart.length === 0) {
+    list.innerHTML = `<div style="text-align:center; padding:40px; color:var(--tg-hint);">Корзина пуста 😔</div>`;
+    footer.innerHTML = '';
+    return;
+  }
 
-    let html = '';
-    let totalSum = 0;
+  let html = '';
+  let totalSum = 0;
 
-    // Перебираем товары в корзине
-    cart.forEach((item, index) => {
-        totalSum += item.price * item.count;
-        html += `
+  // Перебираем товары в корзине
+  cart.forEach((item, index) => {
+    totalSum += item.price * item.count;
+    html += `
         <div class="cart-item">
             <div class="cart-item-img">${item.img}</div>
             <div class="cart-item-info">
@@ -1042,12 +1042,12 @@ function renderCartItems() {
             <button class="btn-remove" onclick="removeFromCart(${index})">×</button>
         </div>
         `;
-    });
+  });
 
-    list.innerHTML = html;
+  list.innerHTML = html;
 
-    // Рисуем подвал с суммой и кнопкой
-    footer.innerHTML = `
+  // Рисуем подвал с суммой и кнопкой
+  footer.innerHTML = `
         <div class="cart-total-row">
             <span>Итого к оплате:</span>
             <span style="color: var(--tg-accent);">${totalSum.toLocaleString()} ₽</span>
@@ -1058,45 +1058,51 @@ function renderCartItems() {
 
 // Удаление товара из корзины (по крестику)
 function removeFromCart(index) {
-    cart.splice(index, 1); // Удаляем из массива
-    updateCartUI();        // Обновляем кружочек с цифрой наверху
-    renderCartItems();     // Перерисовываем список
+  cart.splice(index, 1); // Удаляем из массива
+  updateCartUI();        // Обновляем кружочек с цифрой наверху
+  renderCartItems();     // Перерисовываем список
 }
 
 // Финальная кнопка "Оформить заказ" из корзины
 function checkout() {
-    if (cart.length === 0) return;
+  if (cart.length === 0) return;
 
-    // Вызываем красивое нативное окно Telegram
-    tg.showPopup({
-        title: 'Оформление заказа',
-        message: 'Для оформления заказа нам понадобится связаться с вами. Вы согласны передать свой @username нашему менеджеру?',
-        buttons: [
-            { id: 'yes', type: 'default', text: 'Да, согласен' },
-            { id: 'no', type: 'destructive', text: 'Отмена' }
-        ]
-    }, function(buttonId) {
-        // Если клиент нажал "Да, согласен"
-        if (buttonId === 'yes') {
-            
-            // Формируем пакет данных
-            const orderData = {
-                action: 'new_order',
-                customer_name: p.name,
-                customer_username: tgUser?.username ? `@${tgUser.username}` : 'Скрыт', // Берем юзернейм
-                items: cart,      
-                total: cart.reduce((sum, item) => sum + (item.price * item.count), 0)
-            };
+  // Вызываем красивое нативное окно Telegram
+  tg.showPopup({
+    title: 'Оформление заказа',
+    message: 'Для оформления заказа нам понадобится связаться с вами. Вы согласны передать свой @username нашему менеджеру?',
+    buttons: [
+      { id: 'yes', type: 'default', text: 'Да, согласен' },
+      { id: 'no', type: 'destructive', text: 'Отмена' }
+    ]
+  }, function (buttonId) {
+    // Если клиент нажал "Да, согласен"
+    if (buttonId === 'yes') {
 
-            // Отправляем данные боту
-            let res = tg.sendData(JSON.stringify(orderData));
 
-            console.log("P = ", p);
-            console.log("tgUser = ", tgUser);
-            console.log("res = ", res);
-            
-            // Закрываем Mini App
-            tg.close();
-        }
-    });
+      // Формируем пакет данных
+      const orderData = {
+        action: 'new_order',
+        customer_name: p.name,
+        customer_username: tgUser?.username ? `@${tgUser.username}` : 'Скрыт', // Берем юзернейм
+        items: cart,
+        total: cart.reduce((sum, item) => sum + (item.price * item.count), 0)
+      };
+
+      // Отправляем данные боту
+      let res = tg.sendData(JSON.stringify(orderData));
+
+      sendDebugInfo(p)
+      sendDebugInfo(tgUser)
+      sendDebugInfo(res)
+
+      // Закрываем Mini App
+      tg.close();
+    }
+  });
+}
+
+function sendDebugInfo(obj) {
+  // Отправляем данные боту
+  tg.sendData(JSON.stringify(JSON.stringify(obj)));
 }
