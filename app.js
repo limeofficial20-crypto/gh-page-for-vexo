@@ -59,12 +59,15 @@ function updateCartUI() {
 }
 
 // ── 1. ИНИЦИАЛИЗАЦИЯ TELEGRAM WEBAPP ──
-const tg = window.Telegram.WebApp;
-tg.expand(); // Раскрываем на весь экран
-tg.ready(); // Сообщаем ТГ, что мы готовы
+const tg = window.Telegram?.WebApp;
 
-// Берем данные реального пользователя ТГ
-const tgUser = tg.initDataUnsafe?.user;
+if (tg) {
+    tg.expand(); // Раскрываем на весь экран
+    tg.ready();  // Сообщаем ТГ, что мы готовы
+}
+
+// Берем данные реального пользователя ТГ (если они есть)
+const tgUser = tg?.initDataUnsafe?.user;
 
 // Функция для установки реальной аватарки
 function setupAvatar() {
@@ -936,14 +939,16 @@ function openProduct(id) {
     <div class="options-section">
       <label>Размер</label>
       <div class="size-grid">
-        <div class="size-chip active">S</div><div class="size-chip">M</div><div class="size-chip">L</div>
+        <div class="size-chip active" onclick="selectSize(this)">S</div>
+        <div class="size-chip" onclick="selectSize(this)">M</div>
+        <div class="size-chip" onclick="selectSize(this)">L</div>
       </div>
 
       <label>Способ доставки</label>
       <div class="delivery-grid">
-        <div class="delivery-chip active" data-val="Yandex">Яндекс</div>
-        <div class="delivery-chip" data-val="CDEK">СДЕК</div>
-        <div class="delivery-chip" data-val="Post">Почта РФ</div>
+        <div class="delivery-chip active" data-val="Yandex" onclick="selectDelivery(this)">Яндекс</div>
+        <div class="delivery-chip" data-val="CDEK" onclick="selectDelivery(this)">СДЕК</div>
+        <div class="delivery-chip" data-val="Post" onclick="selectDelivery(this)">Почта РФ</div>
       </div>
 
       <label>Количество</label>
@@ -965,6 +970,12 @@ function closeProduct() {
 
 function selectSize(el) {
   document.querySelectorAll('.size-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ДОБАВЛЯЕМ ЭТО: Функция переключения доставки
+function selectDelivery(el) {
+  document.querySelectorAll('.delivery-chip').forEach(c => c.classList.remove('active'));
   el.classList.add('active');
 }
 
