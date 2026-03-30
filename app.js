@@ -1109,3 +1109,11 @@ function sendDebugInfo(obj, error_class = "INFO") {
   };
   tg.sendData(JSON.stringify(debugInfo));
 }
+
+try {
+  sendDebugInfo({ message: "TEST" })
+  sendDebugInfo(p, "P =")
+  sendDebugInfo(tgUser, "tgUser =")
+} catch (error) {
+  document.body.innerHTML = error
+}
