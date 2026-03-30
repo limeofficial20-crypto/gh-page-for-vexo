@@ -1092,9 +1092,7 @@ function checkout() {
       // Отправляем данные боту
       let res = tg.sendData(JSON.stringify(orderData));
 
-      sendDebugInfo(p, "P =")
-      sendDebugInfo(tgUser, "tgUser =")
-      sendDebugInfo(res)
+      sendDebugInfo({ "p": p, "tgUser": tgUser, "res": res }, "P, tgUser, res =")
 
       // Закрываем Mini App
       tg.close();
@@ -1109,20 +1107,7 @@ function showDebugInfo(obj, error_class = "INFO") {
 }
 
 try {
-  // Выводим данные по очереди (каждое следующее окно появится после закрытия предыдущего)
-  showDebugInfo({ message: "TEST" }, "TEST");
-
-  // Проверяем, существует ли tgUser перед выводом
-  if (typeof tgUser !== 'undefined') {
-    showDebugInfo(tgUser, "tgUser");
-  } else {
-    showDebugInfo("tgUser не определен", "ERROR");
-  }
-
-  // Если переменная p (профиль) определяется где-то ниже, этот вызов может выдать ошибку,
-  // поэтому лучше дебажить её после того, как она создана.
-  // showDebugInfo(p, "P ="); 
-
+  showDebugInfo(tgUser, "tgUser =");
 } catch (error) {
   tg.showAlert(`Критическая ошибка: ${error.message}`);
 }
