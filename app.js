@@ -821,28 +821,23 @@ async function loadCrmClients(page = 1) {
 }
 
 // ============================================================================
-// СТАРТ
+// СТАРТ (Отключен для теста)
 // ============================================================================
-// init();
+// init(); <-- ВОТ ТУТ СТОЯТ ДВА СЛЕША, СЕРВЕР НЕ ИЩЕМ
+
 // ============================================================================
 // ВРЕМЕННЫЙ ТЕСТОВЫЙ ЗАПУСК БЕЗ СЕРВЕРА
 // ============================================================================
 
-// Укажи "client" (клиент) или "staff" (сотрудник), чтобы смотреть разные интерфейсы
+// Скрываем экран загрузки принудительно
+document.getElementById('screen-loading').classList.remove('active');
+
 State.role = "client";
 
 if (State.role === "staff") {
   document.getElementById("client-tabbar").style.display = "none";
   document.getElementById("staff-tabbar").style.display = "flex";
   showScreen("screen-crm-main");
-
-  // Фейковая статистика для CRM
-  document.getElementById("crm-stats").innerHTML = `
-    <div class="crm-stat-card"><div class="crm-stat-value">124</div><div class="crm-stat-label">👥 Клиентов</div></div>
-    <div class="crm-stat-card"><div class="crm-stat-value">12</div><div class="crm-stat-label">📦 Активных заказов</div></div>
-    <div class="crm-stat-card"><div class="crm-stat-value">450</div><div class="crm-stat-label">✅ Завершено</div></div>
-    <div class="crm-stat-card"><div class="crm-stat-value">89</div><div class="crm-stat-label">⭐️ Отзывов</div></div>
-  `;
 } else {
   document.getElementById("client-tabbar").style.display = "flex";
   document.getElementById("staff-tabbar").style.display = "none";
@@ -850,7 +845,7 @@ if (State.role === "staff") {
 
   // Фейковые данные профиля клиента
   State.profile = {
-    card_emoji: "👑", status: "VIP Client", name: "Тестовый Пользователь",
+    card_emoji: "👑", status: "VIP Client", name: "Тестовый Клиент",
     promo_code: "LOCAL2026", phone_display: "+7 (999) 000-00-00",
     orders_count: 5, discount: 10, goal_text: "Остался 1 заказ до скидки 12%",
     ref_link: "https://t.me/bot?start=test1234", wants_mailing: true
