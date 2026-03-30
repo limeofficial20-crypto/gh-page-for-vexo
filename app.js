@@ -67,7 +67,7 @@ if (tg) {
 }
 
 // Берем данные реального пользователя ТГ (если они есть)
-const tgUser = tg?.initDataUnsafe?.user;
+const tgUser = Telegram.WebApp.initDataUnsafe.user;
 
 // Функция для установки реальной аватарки
 function setupAvatar() {
@@ -87,6 +87,7 @@ function setupAvatar() {
 const p = {
   name: tgUser ? `${tgUser.first_name} ${tgUser.last_name || ''}`.trim() : "Клиент VEXO",
   username: tgUser?.username || "unknown",
+  language_code: tgUser?.language_code,
   status: "VIP Client",
   card_emoji: "👑",
   orders_count: 5, // Имитация: реальное кол-во берется с сервера
