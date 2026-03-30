@@ -1103,13 +1103,13 @@ function checkout() {
 
 // Функция для дебага прямо внутри Mini App (не закрывает приложение)
 function showDebugInfo(obj, error_class = "INFO") {
-  const sliced = JSON.stringify(obj).slice(0, 300)
+  const sliced = JSON.stringify(obj).slice(0, 400)
   const text = `[${error_class}] : ${sliced}`;
   tg.showAlert(text);
 }
 
 try {
-  showDebugInfo(tg.initDataUnsafe, "tg.initDataUnsafe =");
+  showDebugInfo(tg.initData, "tg.initData =");
 } catch (error) {
   tg.showAlert(`Критическая ошибка: ${error.message}`);
 }
