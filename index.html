@@ -195,9 +195,6 @@ background-repeat: repeat;
 color: var(--tg-text);
 min-height: 100vh;
 overscroll-behavior: none;
-
-overflow-x: hidden;
-width: 100vw;
 }
 
 /* ── Экраны ── */
@@ -249,9 +246,6 @@ color: #ffffff;
 text-transform: uppercase;
 font-style: italic;
 text-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
-font-size: clamp(24px, 8vw, 39px); /* Динамический размер: не больше 39px, но сжимается на узких экранах */
-  white-space: nowrap;
-}
 
 /* Магия центрирования */
 position: absolute;
@@ -974,12 +968,10 @@ font-size: 18px; font-weight: 900; margin-bottom: 16px;
   </div>
 
   <div class="screen has-tabbar" id="screen-products">
-    <div class="header">
-      <div class="header-title">🛍️ Каталог</div>
-      <button class="top-nav-btn" onclick="showCart()" style="position: absolute; right: 16px;">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-          <div class="cart-badge" id="cart-counter-products"></div>
-      </button>
+    <div class="header"><div class="header-title">🛍️ Каталог</div></div>
+    
+    <div class="search-wrap">
+      <input type="text" class="input" placeholder="Поиск по названию..." id="product-search" oninput="filterProducts()">
     </div>
     
     <div class="filters-row">
