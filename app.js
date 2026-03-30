@@ -4,10 +4,100 @@
    initData передаётся в каждом запросе в заголовке Authorization
 ============================================================================ */
 
+let cart = []; // Массив товаров в корзине
+
+// Функция анимации полета в корзину
+function animateFlyToCart(targetEl) {
+    const cartIcon = document.querySelector('.top-nav-btn'); // Иконка корзины в шапке
+    const flyingIcon = targetEl.cloneNode(true);
+    const rect = targetEl.getBoundingClientRect();
+    const cartRect = cartIcon.getBoundingClientRect();
+
+    flyingIcon.classList.add('fly-item');
+    flyingIcon.style.position = 'fixed';
+    flyingIcon.style.left = rect.left + 'px';
+    flyingIcon.style.top = rect.top + 'px';
+    flyingIcon.style.width = rect.width + 'px';
+    flyingIcon.style.zIndex = '3000';
+    
+    document.body.appendChild(flyingIcon);
+
+    setTimeout(() => {
+        flyingIcon.style.left = cartRect.left + 'px';
+        flyingIcon.style.top = cartRect.top + 'px';
+        flyingIcon.style.width = '20px';
+        flyingIcon.style.opacity = '0';
+        flyingIcon.style.transform = 'rotate(360deg)';
+    }, 50);
+
+    setTimeout(() => flyingIcon.remove(), 800);
+}
+function addToCart(id) {
+    const product = PRODUCTS.find(p => p.id === id);
+    const count = parseInt(document.getElementById('product-count').innerText);
+    const size = document.querySelector('.size-chip.active').innerText;
+    const delivery = document.querySelector('.delivery-chip.active').getAttribute('data-val');
+    
+    // Анимация полета
+    animateFlyToCart(document.getElementById('main-product-img'));
+
+    cart.push({ ...product, count, size, delivery });
+    updateCartUI();
+    closeProduct();
+}
+
+function updateCartUI() {
+    const badge = document.getElementById('cart-counter');
+    const totalItems = cart.reduce((sum, item) => sum + item.count, 0);
+    
+    if (totalItems > 0) {
+        badge.innerText = totalItems;
+        badge.classList.add('active');
+    } else {
+        badge.classList.remove('active');
+    }
+}
+
+// ── 1. ИНИЦИАЛИЗАЦИЯ TELEGRAM WEBAPP ──
 const tg = window.Telegram.WebApp;
+tg.expand(); // Раскрываем на весь экран
+tg.ready(); // Сообщаем ТГ, что мы готовы
+
+// Берем данные реального пользователя ТГ
+const tgUser = tg.initDataUnsafe?.user;
+
+// Функция для установки реальной аватарки
+function setupAvatar() {
+  const avatarContainer = document.querySelector('.card-avatar');
+  if (!avatarContainer) return;
+
+  if (tgUser && tgUser.photo_url) {
+    avatarContainer.innerHTML = `<img src="${tgUser.photo_url}" style="width:100%; height:100%; object-fit:cover;">`;
+  } else {
+    // Дефолтная иконка, если фото скрыто в ТГ
+    avatarContainer.innerHTML = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
+  }
+}
+
+// ── 2. ДАННЫЕ ПРОФИЛЯ (Реальные + Имитация скидки) ──
+// Мы берем имя из ТГ, а скидку/заказы имитируем (пока нет сервера)
+const p = {
+  name: tgUser ? `${tgUser.first_name} ${tgUser.last_name || ''}`.trim() : "Клиент VEXO",
+  username: tgUser?.username || "unknown",
+  status: "VIP Client",
+  card_emoji: "👑",
+  orders_count: 5, // Имитация: реальное кол-во берется с сервера
+  discount: 10,     // Имитация: реальная скидка берется с сервера
+  goal_text: "Остался 1 заказ до скидки 12%",
+  wants_mailing: true,
+  ref_link: `https://t.me/VexoStoreBot?start=ref${tgUser?.id || '0'}`
+};
+
+// Запускаем установку аватара при загрузке
+setupAvatar();
 
 // ── Конфиг ─────────────────────────────────────────────────────────────────
-const API_BASE = "https://limeofficial20-crypto.github.io/gh-page-for-vexo/"; // ← тот же домен что и WEB_APP_URL в bot.py
+const API_BASE = "https://app.whitesurf.ru"; // ← тот же домен что и WEB_APP_URL в bot.py
 
 // ── Глобальное состояние ────────────────────────────────────────────────────
 const State = {
@@ -53,19 +143,27 @@ async function api(path, options = {}) {
 }
 
 /** Показать экран по id, запомнить предыдущий для goBack() */
-function showScreen(id, savePrev = true) {
+function showScreen(id) {
+  // 1. Находим все элементы с классом screen и убираем у них active
+  const allScreens = document.querySelectorAll('.screen');
+  allScreens.forEach(s => {
+    s.classList.remove('active');
+  });
+
+  // 2. Находим нужный экран по ID и делаем его активным
   const target = document.getElementById(id);
   if (!target) {
     console.error(`Экран с id="${id}" не найден в HTML!`);
     return;
   }
+  target.classList.add('active');
 
-  const current = document.querySelector(".screen.active");
-  if (current && savePrev) State.prevScreen = current.id;
-
-  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-  target.classList.add("active");
-
+  // 3. Если это каталог товаров, запускаем его рендер
+  if (id === 'screen-products') {
+    renderProducts();
+  }
+  
+  // 4. Скроллим в начало страницы
   window.scrollTo(0, 0);
 }
 
@@ -218,7 +316,8 @@ function renderProfile(p) {
       </div>
       <div class="vip-card-content">
         <div class="card-badge" style="display:inline-flex; align-items:center;">${iconCrown} ${p.status}</div>
-        <div class="card-name">${p.name}</div>
+
+<div class="card-name" style="cursor: pointer;" onclick="showScreen('screen-admin')">${p.name}</div>
         <div class="card-stats">
           <div class="stat-bubble"><div class="stat-value">${p.orders_count}</div><div class="stat-label">Заказов</div></div>
           <div class="stat-bubble"><div class="stat-value">${p.discount}%</div><div class="stat-label">Скидка</div></div>
@@ -259,7 +358,58 @@ function renderProfile(p) {
     </div>
   `;
 }
+function toggleDiscountField(val) {
 
+    document.getElementById('discount-percent-wrap').style.display = (val === 'yes') ? 'block' : 'none';
+
+}
+
+
+
+function saveNewProduct() {
+    const name = document.getElementById('admin-name').value;
+    const price = parseInt(document.getElementById('admin-price').value);
+    const hasDiscount = document.getElementById('admin-has-discount').value === 'yes';
+    const discVal = parseInt(document.getElementById('admin-discount-val').value) || 0;
+    const fileInput = document.getElementById('admin-img');
+
+    if (!name || !price) {
+        toast("Заполните название и цену!");
+        return;
+    }
+
+    // Логика чтения изображения
+    let productImg = '📦'; // Дефолт, если фото не выбрано
+    
+    if (fileInput.files && fileInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const finalImgUrl = e.target.result; // Это "слепок" картинки в виде текста (base64)
+            
+            const newProd = {
+                id: Date.now(),
+                title: name,
+                price: hasDiscount ? Math.round(price * (1 - discVal/100)) : price,
+                oldPrice: hasDiscount ? price : null,
+                discount: hasDiscount ? `-${discVal}%` : null,
+                category: 'all',
+                img: `<img src="${finalImgUrl}" style="width:100%; height:100%; object-fit:cover;">`
+            };
+
+            PRODUCTS.unshift(newProd); // Добавляем в начало списка
+            toast("Товар опубликован!");
+            showScreen('screen-products');
+        };
+        reader.readAsDataURL(fileInput.files[0]);
+    } else {
+        // Если фото не выбрано, просто добавляем со смайликом
+        PRODUCTS.unshift({
+            id: Date.now(), title: name, price, oldPrice: null, discount: null, category: 'all', img: '📦'
+        });
+        toast("Добавлено без фото");
+        showScreen('screen-products');
+    }
+}
 function shareRef() {
   if (!State.profile) return;
   const url = `https://t.me/share/url?url=${encodeURIComponent(State.profile.ref_link)}&text=${encodeURIComponent("Лови промокод на скидку!")}`;
@@ -762,3 +912,148 @@ function filterProducts() {
   renderProducts();
 }
 renderProducts()
+
+// Открытие карточки товара
+function openProduct(id) {
+  const product = PRODUCTS.find(p => p.id === id);
+  const sheet = document.getElementById('product-sheet');
+  const body = document.getElementById('sheet-body');
+
+  let count = 1;
+
+  body.innerHTML = `
+    <div class="product-info-row">
+      <div class="product-img-box" id="main-product-img" style="width:100px; height:100px; font-size:50px;">${product.img}</div>
+      <div class="product-details">
+        <h3>${product.title}</h3>
+        <div class="price-row">
+          <span class="price-new">${product.price.toLocaleString()} ₽</span>
+          ${product.oldPrice ? `<span class="price-old">${product.oldPrice.toLocaleString()} ₽</span>` : ''}
+        </div>
+      </div>
+    </div>
+
+    <div class="options-section">
+      <label>Размер</label>
+      <div class="size-grid">
+        <div class="size-chip active">S</div><div class="size-chip">M</div><div class="size-chip">L</div>
+      </div>
+
+      <label>Способ доставки</label>
+      <div class="delivery-grid">
+        <div class="delivery-chip active" data-val="Yandex">Яндекс</div>
+        <div class="delivery-chip" data-val="CDEK">СДЕК</div>
+        <div class="delivery-chip" data-val="Post">Почта РФ</div>
+      </div>
+
+      <label>Количество</label>
+      <div class="counter-row">
+        <button class="count-btn" onclick="this.nextElementSibling.innerText = Math.max(1, parseInt(this.nextElementSibling.innerText)-1)">-</button>
+        <span id="product-count" class="count-value">1</span>
+        <button class="count-btn" onclick="this.previousElementSibling.innerText = parseInt(this.previousElementSibling.innerText)+1">+</button>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="addToCart(${product.id})">В корзину</button>
+  `;
+  sheet.classList.add('active');
+}
+
+function closeProduct() {
+  document.getElementById('product-sheet').classList.remove('active');
+}
+
+function selectSize(el) {
+  document.querySelectorAll('.size-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// Кнопка "Оформить заказ" — закрывает Mini App и отправляет данные в бота
+function handleOrder(productId) {
+  const product = PRODUCTS.find(p => p.id === productId);
+  const size = document.querySelector('.size-chip.active').innerText;
+  
+  const orderData = {
+    type: 'order',
+    product: product.title,
+    price: product.price,
+    size: size
+  };
+
+  // Отправляем данные боту (это закроет Mini App)
+  tg.sendData(JSON.stringify(orderData));
+}
+// ==========================================
+// ЛОГИКА КОРЗИНЫ
+// ==========================================
+
+// Открывает экран корзины и рисует товары
+function showCart() {
+    showScreen('screen-cart');
+    renderCartItems();
+}
+
+// Рисует список товаров и считает сумму
+function renderCartItems() {
+    const list = document.getElementById('cart-items-list');
+    const footer = document.getElementById('cart-footer');
+
+    // Если корзина пустая
+    if (cart.length === 0) {
+        list.innerHTML = `<div style="text-align:center; padding:40px; color:var(--tg-hint);">Корзина пуста 😔</div>`;
+        footer.innerHTML = '';
+        return;
+    }
+
+    let html = '';
+    let totalSum = 0;
+
+    // Перебираем товары в корзине
+    cart.forEach((item, index) => {
+        totalSum += item.price * item.count;
+        html += `
+        <div class="cart-item">
+            <div class="cart-item-img">${item.img}</div>
+            <div class="cart-item-info">
+                <div class="cart-item-title">${item.title}</div>
+                <div class="cart-item-props">Размер: ${item.size} | Доставка: ${item.delivery}</div>
+                <div class="cart-item-price">${item.price.toLocaleString()} ₽ x ${item.count} шт.</div>
+            </div>
+            <button class="btn-remove" onclick="removeFromCart(${index})">×</button>
+        </div>
+        `;
+    });
+
+    list.innerHTML = html;
+
+    // Рисуем подвал с суммой и кнопкой
+    footer.innerHTML = `
+        <div class="cart-total-row">
+            <span>Итого к оплате:</span>
+            <span style="color: var(--tg-accent);">${totalSum.toLocaleString()} ₽</span>
+        </div>
+        <button class="btn btn-primary" onclick="checkout()">Оформить заказ</button>
+    `;
+}
+
+// Удаление товара из корзины (по крестику)
+function removeFromCart(index) {
+    cart.splice(index, 1); // Удаляем из массива
+    updateCartUI();        // Обновляем кружочек с цифрой наверху
+    renderCartItems();     // Перерисовываем список
+}
+
+// Финальная кнопка "Оформить заказ" из корзины
+function checkout() {
+    if (cart.length === 0) return;
+    
+    const orderData = {
+        action: 'new_order',
+        customer: p.name, 
+        items: cart,      
+        total: cart.reduce((sum, item) => sum + (item.price * item.count), 0)
+    };
+
+    // Отправляем в Telegram и закрываем Mini App
+    tg.sendData(JSON.stringify(orderData));
+}
