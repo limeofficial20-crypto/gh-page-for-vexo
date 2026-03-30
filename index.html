@@ -890,7 +890,7 @@ font-size: 24px; padding: 0 10px; cursor: pointer;
 }
 
 .cart-footer {
-position: fixed; bottom: 0; left: 0; width: 100%;
+position: fixed; bottom: 75px; left: 0; width: 100%;
 background: var(--tg-bg);
 padding: 16px 16px 24px 16px;
 border-top: 1px solid rgba(255,255,255,0.1);
@@ -1158,12 +1158,15 @@ font-size: 18px; font-weight: 900; margin-bottom: 16px;
   <!-- ══════════════════════════════════════════════════════════════════════════
      FAQ ДЕТАЛИ
 ══════════════════════════════════════════════════════════════════════════ -->
-  <div class="screen" id="screen-faq">
+<div class="screen" id="screen-faq">
     <div class="header">
-
       <button class="header-back" onclick="showScreen('screen-support')">‹</button>
-
-      <div class="header-title">Часто задаваемые вопросы</div>
+      <div class="header-title">Частые вопросы</div>
+    </div>
+    
+    <div class="card" style="margin-top: 16px;">
+        <div id="faq-title" style="font-size: 18px; font-weight: 800; color: #fff; margin-bottom: 12px;"></div>
+        <div id="faq-text" style="font-size: 14px; color: var(--tg-hint); line-height: 1.6; white-space: pre-wrap;"></div>
     </div>
   </div>
 
