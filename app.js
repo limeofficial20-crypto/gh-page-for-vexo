@@ -149,33 +149,23 @@ async function api(path, options = {}) {
 
 /** Показать экран по id, запомнить предыдущий для goBack() */
 function showScreen(id) {
-  // 1. Находим все элементы с классом screen и убираем у них active
-  const allScreens = document.querySelectorAll('.screen');
-  allScreens.forEach(s => {
-    s.classList.remove('active');
-  });
-
-  // 2. Находим нужный экран по ID и делаем его активным
-  const target = document.getElementById(id);
-  if (!target) {
-    console.error(`Экран с id="${id}" не найден в HTML!`);
-    return;
+  // Запоминаем текущий активный экран для кнопки "Назад"
+  const currentActive = document.querySelector('.screen.active');
+  if (currentActive && currentActive.id !== id) {
+    State.prevScreen = currentActive.id;
   }
-  target.classList.add('active');
 
-  // 3. ПОДСВЕТКА НИЖНЕГО МЕНЮ (НОВЫЙ КОД)
-  // Убираем красный цвет у всех кнопок
+  // Скрываем все экраны и показываем нужный
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const target = document.getElementById(id);
+  if (target) target.classList.add('active');
+
+  // Подсветка нижнего меню
   document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-  // Ищем кнопку, которая соответствует экрану (например, screen-products -> tab-products)
   const activeTabBtn = document.getElementById(id.replace('screen-', 'tab-'));
   if (activeTabBtn) activeTabBtn.classList.add('active');
 
-  // 4. Если это каталог товаров, запускаем его рендер
-  if (id === 'screen-products') {
-    renderProducts();
-  }
-  
-  // 5. Скроллим в начало страницы
+  if (id === 'screen-products') renderProducts();
   window.scrollTo(0, 0);
 }
 
