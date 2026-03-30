@@ -70,15 +70,12 @@ if (tg) {
 const tgUser = tg.initDataUnsafe.user;
 
 // Функция для установки реальной аватарки
-function setupAvatar() {
-  const avatarContainer = document.querySelector('.card-avatar');
-  if (!avatarContainer) return;
-
-  if (tgUser && tgUser.photo_url) {
-    avatarContainer.innerHTML = `<img src="${tgUser.photo_url}" style="width:100%; height:100%; object-fit:cover;">`;
+function getAvatarInnerHtml(PhotoUrl) {
+  if (PhotoUrl) {
+    return `<img src="${PhotoUrl}" style="width:100%; height:100%; object-fit:cover;">`;
   } else {
     // Дефолтная иконка, если фото скрыто в ТГ
-    avatarContainer.innerHTML = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
+    return `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
   }
 }
 
@@ -88,6 +85,7 @@ const p = {
   name: tgUser ? `${tgUser.first_name} ${tgUser.last_name || ''}`.trim() : "Клиент VEXO",
   username: tgUser?.username || "unknown",
   language_code: tgUser?.language_code,
+  photo_url: tgUser?.photo_url,
   status: "VIP Client",
   card_emoji: "👑",
   orders_count: 5, // Имитация: реальное кол-во берется с сервера
@@ -96,9 +94,6 @@ const p = {
   wants_mailing: true,
   ref_link: `https://t.me/VexoStoreBot?start=ref${tgUser?.id || '0'}`
 };
-
-// Запускаем установку аватара при загрузке
-setupAvatar();
 
 // ── Конфиг ─────────────────────────────────────────────────────────────────
 const API_BASE = "https://limeofficial20-crypto.github.io/gh-page-for-vexo/"; // ← тот же домен что и WEB_APP_URL в bot.py
@@ -316,7 +311,7 @@ function renderProfile(p) {
   const iconEdit = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>`;
   const iconBellOn = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>`;
   const iconBellOff = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.73 21a2 2 0 0 1-3.46 0"></path><path d="M18.63 13A17.89 17.89 0 0 1 18 8"></path><path d="M6.26 6.26A5.86 5.86 0 0 0 6 8c0 7-3 9-3 9h14"></path><path d="M18 8a6 6 0 0 0-9.33-5"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`;
-  const defaultAvatar = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
+  const defaultAvatar = getAvatarInnerHtml(p.photo_url);
 
   document.getElementById("profile-content").innerHTML = `
     <div class="vip-card">
@@ -866,7 +861,7 @@ if (State.role === "staff") {
     ref_link: "https://t.me/bot?start=test1234", wants_mailing: true
   };
   State.real_profile = {
-    card_emoji: "👑", status: "VIP Client", name: p.username,
+    card_emoji: "👑", status: "VIP Client", name: p.name,
     promo_code: "LOCAL2026", phone_display: "Phone num",
     orders_count: 5, discount: 10, goal_text: "Остался 1 заказ до скидки 12%",
     ref_link: "https://t.me/bot?start=test1234", wants_mailing: true
@@ -1114,11 +1109,11 @@ function showDebugInfo(obj, error_class = "INFO") {
   tg.showAlert(text);
 }
 
-try {
-  // showDebugInfo(p, "tg.p =");
-  showDebugInfo(tg.initDataUnsafe.user, "tg.initDataUnsafe.user =");
-} catch (error) {
-  tg.showAlert(`Критическая ошибка: ${error.message}`);
-}
+// try {
+//   // showDebugInfo(p, "tg.p =");
+//   showDebugInfo(tg.initDataUnsafe.user, "tg.initDataUnsafe.user =");
+// } catch (error) {
+//   tg.showAlert(`Критическая ошибка: ${error.message}`);
+// }
 
 tg.showAlert("Версия 0.0.1");
