@@ -1109,7 +1109,7 @@ function showDebugInfo(obj, error_class = "INFO") {
 }
 
 try {
-  showDebugInfo(tg.initData, "tg.initData =");
+  showDebugInfo(tg.initDataUnsafe, "tg.initDataUnsafe =");
 } catch (error) {
   tg.showAlert(`Критическая ошибка: ${error.message}`);
 }
