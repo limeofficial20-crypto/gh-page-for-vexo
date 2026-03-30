@@ -47,16 +47,14 @@ function addToCart(id) {
 }
 
 function updateCartUI() {
-    const badge1 = document.getElementById('cart-counter');
-    const badge2 = document.getElementById('cart-counter-products'); // Наш новый бейдж в товарах
+    const badge = document.getElementById('cart-counter');
     const totalItems = cart.reduce((sum, item) => sum + item.count, 0);
     
     if (totalItems > 0) {
-        if (badge1) { badge1.innerText = totalItems; badge1.classList.add('active'); }
-        if (badge2) { badge2.innerText = totalItems; badge2.classList.add('active'); }
+        badge.innerText = totalItems;
+        badge.classList.add('active');
     } else {
-        if (badge1) badge1.classList.remove('active');
-        if (badge2) badge2.classList.remove('active');
+        badge.classList.remove('active');
     }
 }
 
@@ -149,23 +147,33 @@ async function api(path, options = {}) {
 
 /** Показать экран по id, запомнить предыдущий для goBack() */
 function showScreen(id) {
-  // Запоминаем текущий активный экран для кнопки "Назад"
-  const currentActive = document.querySelector('.screen.active');
-  if (currentActive && currentActive.id !== id) {
-    State.prevScreen = currentActive.id;
-  }
+  // 1. Находим все элементы с классом screen и убираем у них active
+  const allScreens = document.querySelectorAll('.screen');
+  allScreens.forEach(s => {
+    s.classList.remove('active');
+  });
 
-  // Скрываем все экраны и показываем нужный
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  // 2. Находим нужный экран по ID и делаем его активным
   const target = document.getElementById(id);
-  if (target) target.classList.add('active');
+  if (!target) {
+    console.error(`Экран с id="${id}" не найден в HTML!`);
+    return;
+  }
+  target.classList.add('active');
 
-  // Подсветка нижнего меню
+  // 3. ПОДСВЕТКА НИЖНЕГО МЕНЮ (НОВЫЙ КОД)
+  // Убираем красный цвет у всех кнопок
   document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+  // Ищем кнопку, которая соответствует экрану (например, screen-products -> tab-products)
   const activeTabBtn = document.getElementById(id.replace('screen-', 'tab-'));
   if (activeTabBtn) activeTabBtn.classList.add('active');
 
-  if (id === 'screen-products') renderProducts();
+  // 4. Если это каталог товаров, запускаем его рендер
+  if (id === 'screen-products') {
+    renderProducts();
+  }
+  
+  // 5. Скроллим в начало страницы
   window.scrollTo(0, 0);
 }
 
@@ -437,11 +445,17 @@ async function saveName() {
   const name = document.getElementById("new-name-input").value.trim();
   if (!name) { toast("⚠️ Введите имя"); return; }
 
-  // Временная логика без сервера
-  State.profile.name = name;
-  toast("✅ Имя изменено!");
-  goBack();
-  renderProfile(State.profile); // Обновляем карточку
+  try {
+    await api("/api/profile/name", {
+      method: "POST",
+      body: JSON.stringify({ name }),
+    });
+    toast("✅ Имя изменено!");
+    goBack();
+    loadProfile(); // обновляем профиль
+  } catch (e) {
+    toast(`⚠️ ${e.message}`);
+  }
 }
 
 // ── Подписка на рассылку ─────────────────────────────────────────────────────
@@ -450,10 +464,17 @@ async function toggleMailing() {
   if (!State.profile) return;
   const newState = !State.profile.wants_mailing;
 
-  // Временная логика без сервера
-  State.profile.wants_mailing = newState;
-  toast(newState ? "🔔 Подписка активирована!" : "🔕 Вы отписались");
-  renderProfile(State.profile); // Обновляем переключатель
+  try {
+    await api("/api/profile/mailing", {
+      method: "POST",
+      body: JSON.stringify({ subscribe: newState }),
+    });
+    State.profile.wants_mailing = newState;
+    toast(newState ? "🔔 Подписка активирована!" : "🔕 Вы отписались");
+    renderProfile(State.profile); // перерисовываем кнопку
+  } catch (e) {
+    toast(`⚠️ ${e.message}`);
+  }
 }
 
 // ============================================================================
@@ -678,7 +699,7 @@ document.getElementById("btn-open-support").addEventListener("click", async () =
 
   try {
     // Вариант 1: через API (не требует закрытия Mini App)
-    await //api("/api/support/request", { method: "POST" });
+    await api("/api/support/request", { method: "POST" });
     toast("✅ Запрос отправлен! Менеджер напишет вам в Telegram.");
     btn.textContent = "⏳ Ожидайте ответа менеджера";
 
@@ -689,7 +710,7 @@ document.getElementById("btn-open-support").addEventListener("click", async () =
       toast(`⏳ ${e.message}`);
     } else {
       // Вариант 2 (fallback): закрываем Mini App и открываем чат через sendData
-      //tg.sendData(JSON.stringify({ action: "open_support" }));
+      tg.sendData(JSON.stringify({ action: "open_support" }));
     }
     btn.disabled = false;
     btn.textContent = "🛍 Оформить заказ / Задать вопрос";
@@ -1058,16 +1079,20 @@ function checkout() {
         // Если клиент нажал "Да, согласен"
         if (buttonId === 'yes') {
             
-            // ВРЕМЕННО ОТКЛЮЧЕНО ДЛЯ ТЕСТОВ ДИЗАЙНА
-            // const orderData = { ... };
-            // tg.sendData(JSON.stringify(orderData));
-            // tg.close();
+            // Формируем пакет данных
+            const orderData = {
+                action: 'new_order',
+                customer_name: p.name,
+                customer_username: tgUser?.username ? `@${tgUser.username}` : 'Скрыт', // Берем юзернейм
+                items: cart,      
+                total: cart.reduce((sum, item) => sum + (item.price * item.count), 0)
+            };
 
-            // Тестовая реакция:
-            toast("✅ Заказ оформлен! (Тестовый режим)");
-            cart = []; // Очищаем корзину
-            updateCartUI(); // Обновляем кружочки
-            showScreen('screen-profile'); // Возвращаем в профиль
+            // Отправляем данные боту
+            tg.sendData(JSON.stringify(orderData));
+            
+            // Закрываем Mini App
+            tg.close();
         }
     });
 }
