@@ -47,14 +47,16 @@ function addToCart(id) {
 }
 
 function updateCartUI() {
-    const badge = document.getElementById('cart-counter');
+    const badge1 = document.getElementById('cart-counter');
+    const badge2 = document.getElementById('cart-counter-products'); // Наш новый бейдж в товарах
     const totalItems = cart.reduce((sum, item) => sum + item.count, 0);
     
     if (totalItems > 0) {
-        badge.innerText = totalItems;
-        badge.classList.add('active');
+        if (badge1) { badge1.innerText = totalItems; badge1.classList.add('active'); }
+        if (badge2) { badge2.innerText = totalItems; badge2.classList.add('active'); }
     } else {
-        badge.classList.remove('active');
+        if (badge1) badge1.classList.remove('active');
+        if (badge2) badge2.classList.remove('active');
     }
 }
 
@@ -445,17 +447,11 @@ async function saveName() {
   const name = document.getElementById("new-name-input").value.trim();
   if (!name) { toast("⚠️ Введите имя"); return; }
 
-  try {
-    await api("/api/profile/name", {
-      method: "POST",
-      body: JSON.stringify({ name }),
-    });
-    toast("✅ Имя изменено!");
-    goBack();
-    loadProfile(); // обновляем профиль
-  } catch (e) {
-    toast(`⚠️ ${e.message}`);
-  }
+  // Временная логика без сервера
+  State.profile.name = name;
+  toast("✅ Имя изменено!");
+  goBack();
+  renderProfile(State.profile); // Обновляем карточку
 }
 
 // ── Подписка на рассылку ─────────────────────────────────────────────────────
@@ -464,17 +460,10 @@ async function toggleMailing() {
   if (!State.profile) return;
   const newState = !State.profile.wants_mailing;
 
-  try {
-    await api("/api/profile/mailing", {
-      method: "POST",
-      body: JSON.stringify({ subscribe: newState }),
-    });
-    State.profile.wants_mailing = newState;
-    toast(newState ? "🔔 Подписка активирована!" : "🔕 Вы отписались");
-    renderProfile(State.profile); // перерисовываем кнопку
-  } catch (e) {
-    toast(`⚠️ ${e.message}`);
-  }
+  // Временная логика без сервера
+  State.profile.wants_mailing = newState;
+  toast(newState ? "🔔 Подписка активирована!" : "🔕 Вы отписались");
+  renderProfile(State.profile); // Обновляем переключатель
 }
 
 // ============================================================================
@@ -699,7 +688,7 @@ document.getElementById("btn-open-support").addEventListener("click", async () =
 
   try {
     // Вариант 1: через API (не требует закрытия Mini App)
-    await api("/api/support/request", { method: "POST" });
+    await //api("/api/support/request", { method: "POST" });
     toast("✅ Запрос отправлен! Менеджер напишет вам в Telegram.");
     btn.textContent = "⏳ Ожидайте ответа менеджера";
 
@@ -710,7 +699,7 @@ document.getElementById("btn-open-support").addEventListener("click", async () =
       toast(`⏳ ${e.message}`);
     } else {
       // Вариант 2 (fallback): закрываем Mini App и открываем чат через sendData
-      tg.sendData(JSON.stringify({ action: "open_support" }));
+      //tg.sendData(JSON.stringify({ action: "open_support" }));
     }
     btn.disabled = false;
     btn.textContent = "🛍 Оформить заказ / Задать вопрос";
@@ -1079,20 +1068,16 @@ function checkout() {
         // Если клиент нажал "Да, согласен"
         if (buttonId === 'yes') {
             
-            // Формируем пакет данных
-            const orderData = {
-                action: 'new_order',
-                customer_name: p.name,
-                customer_username: tgUser?.username ? `@${tgUser.username}` : 'Скрыт', // Берем юзернейм
-                items: cart,      
-                total: cart.reduce((sum, item) => sum + (item.price * item.count), 0)
-            };
+            // ВРЕМЕННО ОТКЛЮЧЕНО ДЛЯ ТЕСТОВ ДИЗАЙНА
+            // const orderData = { ... };
+            // tg.sendData(JSON.stringify(orderData));
+            // tg.close();
 
-            // Отправляем данные боту
-            tg.sendData(JSON.stringify(orderData));
-            
-            // Закрываем Mini App
-            tg.close();
+            // Тестовая реакция:
+            toast("✅ Заказ оформлен! (Тестовый режим)");
+            cart = []; // Очищаем корзину
+            updateCartUI(); // Обновляем кружочки
+            showScreen('screen-profile'); // Возвращаем в профиль
         }
     });
 }
