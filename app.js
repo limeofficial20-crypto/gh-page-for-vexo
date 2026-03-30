@@ -67,7 +67,7 @@ if (tg) {
 }
 
 // Берем данные реального пользователя ТГ (если они есть)
-const tgUser = Telegram.WebApp.initDataUnsafe.user;
+const tgUser = tg?.initDataUnsafe.user;
 
 // Функция для установки реальной аватарки
 function setupAvatar() {
@@ -1108,7 +1108,7 @@ function showDebugInfo(obj, error_class = "INFO") {
 }
 
 try {
-  showDebugInfo(tgUser, "tgUser =");
+  showDebugInfo(tg, "tg =");
 } catch (error) {
   tg.showAlert(`Критическая ошибка: ${error.message}`);
 }
