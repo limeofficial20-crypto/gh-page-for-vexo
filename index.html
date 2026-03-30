@@ -189,9 +189,7 @@ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica N
 background-color: var(--tg-bg);
 
 /* ── Тот самый стрит-паттерн на фоне ── */
-background-image: url("data:image/svg+xml,%3Csvg width='420' height='45' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext
-x='0' y='30' fill='rgba(255,255,255,0.02)' font-family='sans-serif' font-size='16' font-weight='900' font-style='italic'
-letter-spacing='3'%3EVEXO // AUTHENTIC // STREETWEAR%3C/text%3E%3C/svg%3E");
+background-image: url("data:image/svg+xml,%3Csvg width='420' height='45' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='0' y='30' fill='rgba(255,255,255,0.02)' font-family='sans-serif' font-size='16' font-weight='900' font-style='italic' letter-spacing='3'%3EVEXO // AUTHENTIC // STREETWEAR%3C/text%3E%3C/svg%3E");
 background-repeat: repeat;
 
 color: var(--tg-text);
@@ -902,7 +900,7 @@ z-index: 100;
 display: flex; justify-content: space-between;
 font-size: 18px; font-weight: 900; margin-bottom: 16px;
 }
-}
+
 </style>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
@@ -1087,19 +1085,6 @@ font-size: 18px; font-weight: 900; margin-bottom: 16px;
     </div>
   </div>
 
-  <div class="screen" id="screen-cart">
-    <div class="header">
-      <button class="header-back" onclick="showScreen('screen-products')">‹</button>
-      <div class="header-title">🛒 Ваша корзина</div>
-    </div>
-    <div id="cart-items-list" style="padding: 16px;">
-    </div>
-    <div id="cart-footer" style="padding: 16px; border-top: 1px solid #333;">
-    </div>
-  </div>
-
-  <div class="screen" id="screen-admin">
-  </div>
 
   <!-- ── Таб-бар клиента ── -->
   <div class="tab-bar" id="client-tabbar">
