@@ -1110,7 +1110,7 @@ function showDebugInfo(obj, error_class = "INFO") {
 }
 
 try {
-  showDebugInfo(p, "tg.p =");
+  showDebugInfo(getAvatarInnerHtml(p.photo_url), "getAvatarInnerHtml(p.photo_url) =");
 } catch (error) {
   tg.showAlert(`Критическая ошибка: ${error.message}`);
 }
