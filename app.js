@@ -311,14 +311,18 @@ function renderProfile(p) {
   const iconEdit = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>`;
   const iconBellOn = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>`;
   const iconBellOff = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.73 21a2 2 0 0 1-3.46 0"></path><path d="M18.63 13A17.89 17.89 0 0 1 18 8"></path><path d="M6.26 6.26A5.86 5.86 0 0 0 6 8c0 7-3 9-3 9h14"></path><path d="M18 8a6 6 0 0 0-9.33-5"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`;
-  const defaultAvatar = getAvatarInnerHtml(p.photo_url);
+  const avatar = getAvatarInnerHtml(p.photo_url);
+
+  console.log("Render profiel:", p);
+  console.log("with avatar", avatar);
+
 
   document.getElementById("profile-content").innerHTML = `
     <div class="vip-card">
       <div class="card-gradient"></div>
       <div class="card-watermark">VEXO // AUTHENTIC</div>
       <div class="card-avatar-wrap">
-        <div class="card-avatar">${defaultAvatar}</div>
+        <div class="card-avatar" id="client-avatar">${avatar}</div>
       </div>
       <div class="vip-card-content">
         <div class="card-badge" style="display:inline-flex; align-items:center;">${iconCrown} ${p.status}</div>
@@ -864,7 +868,8 @@ if (State.role === "staff") {
     card_emoji: "👑", status: "VIP Client", name: p.name,
     promo_code: "LOCAL2026", phone_display: "Phone num",
     orders_count: 5, discount: 10, goal_text: "Остался 1 заказ до скидки 12%",
-    ref_link: "https://t.me/bot?start=test1234", wants_mailing: true
+    ref_link: "https://t.me/bot?start=test1234", wants_mailing: true,
+    photo_url: p.photo_url
   };
   renderProfile(State.real_profile);
 }
@@ -1102,17 +1107,11 @@ function checkout() {
   });
 }
 
-// Функция для дебага прямо внутри Mini App (не закрывает приложение)
 function showDebugInfo(obj, error_class = "INFO") {
-  const sliced = JSON.stringify(obj).slice(0, 230)
-  const text = `[${error_class}] : ${sliced}`;
-  tg.showAlert(text);
+  // const sliced = JSON.stringify(obj).slice(0, 230)
+  // const text = `[${error_class}] : ${sliced}`;
+  // tg.showAlert(text);
+  console.log(obj);
 }
 
-try {
-  showDebugInfo(getAvatarInnerHtml(p.photo_url), "getAvatarInnerHtml(p.photo_url) =");
-} catch (error) {
-  tg.showAlert(`Критическая ошибка: ${error.message}`);
-}
-
-tg.showAlert("Версия 0.0.1");
+console.log("Версия 0.0.1");
