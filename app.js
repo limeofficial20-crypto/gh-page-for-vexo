@@ -313,10 +313,6 @@ function renderProfile(p) {
   const iconBellOff = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.73 21a2 2 0 0 1-3.46 0"></path><path d="M18.63 13A17.89 17.89 0 0 1 18 8"></path><path d="M6.26 6.26A5.86 5.86 0 0 0 6 8c0 7-3 9-3 9h14"></path><path d="M18 8a6 6 0 0 0-9.33-5"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`;
   const avatar = getAvatarInnerHtml(p.photo_url);
 
-  console.log("Render profiel:", p);
-  console.log("with avatar", avatar);
-
-
   document.getElementById("profile-content").innerHTML = `
     <div class="vip-card">
       <div class="card-gradient"></div>
@@ -1114,4 +1110,4 @@ function showDebugInfo(obj, error_class = "INFO") {
   console.log(obj);
 }
 
-console.log("Версия 0.0.1");
+console.log("Версия 0.0.2");
